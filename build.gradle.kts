@@ -7,6 +7,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
 }
 
+// Descripción basÍca del proyecto.
 group = "co.edu.uniquindio"
 version = "1.0-SNAPSHOT"
 description = "Proyecto basado en el desarrollo para el sistema Store-It!, " +
@@ -45,6 +46,12 @@ dependencies {
     // Dependencia de prueba
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // Spring Boot JPA (para Hibernate y ORM)
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    // Driver JDBC para Oracle (versión 21.x)
+    implementation("com.oracle.database.jdbc:ojdbc11:21.9.0.0")
+
 }
 
 tasks.withType<Test>{
