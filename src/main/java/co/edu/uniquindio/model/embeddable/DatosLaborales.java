@@ -6,7 +6,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,11 +32,6 @@ public class DatosLaborales {
 
     @Column(name = "sueldo", nullable = false)
     private BigDecimal sueldo;
-
-    @Email
-    @Column(name = "email_empresarial", nullable = false, unique = true)
-    @Comment("Dirección de correo electrónico empresarial única para autenticación.")
-    private String emailEmpresarial;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_contrato", nullable = false)

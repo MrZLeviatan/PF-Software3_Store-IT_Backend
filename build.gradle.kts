@@ -40,6 +40,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     // Starter de Seguridad de Spring Boot: Agrega funciones de autenticación y seguridad
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    // Starter de Seguridad de Spring Boot: Agrega funciones de autenticación y seguridad
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
     // Lombok: Reduce el código repetitivo en clases Java (Getters, Setters, etc.)
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -55,6 +58,10 @@ dependencies {
     // Mapper: Crea instancias de mapeo.
     implementation("org.mapstruct:mapstruct:1.6.3")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
+    // Simple Java Mail: Librería para enviar correos electrónicos
+    implementation("org.simplejavamail:simple-java-mail:8.12.5")
+    implementation("org.simplejavamail:batch-module:8.12.5")
 
 }
 
