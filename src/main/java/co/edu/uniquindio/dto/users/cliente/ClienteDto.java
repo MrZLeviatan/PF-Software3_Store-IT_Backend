@@ -1,7 +1,7 @@
 package co.edu.uniquindio.dto.users.cliente;
 
-import co.edu.uniquindio.dto.users.common.UbicacionDto;
-import co.edu.uniquindio.dto.users.common.UserDto;
+import co.edu.uniquindio.dto.common.UbicacionDto;
+import co.edu.uniquindio.dto.common.user.UserDto;
 import co.edu.uniquindio.model.enums.TipoCliente;
 
 public record ClienteDto(
@@ -15,7 +15,6 @@ public record ClienteDto(
         TipoCliente tipoCliente,
         String nit,
         UbicacionDto ubicacion
-
 
 
 ) {

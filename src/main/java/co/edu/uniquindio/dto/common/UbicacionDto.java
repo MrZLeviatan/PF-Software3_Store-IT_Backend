@@ -1,4 +1,4 @@
-package co.edu.uniquindio.dto.users.common;
+package co.edu.uniquindio.dto.common;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;

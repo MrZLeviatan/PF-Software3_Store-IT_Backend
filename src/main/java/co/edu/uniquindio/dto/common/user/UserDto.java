@@ -1,4 +1,4 @@
-package co.edu.uniquindio.dto.users.common;
+package co.edu.uniquindio.dto.common.user;
 
 import co.edu.uniquindio.model.enums.EstadoCuenta;
 import jakarta.validation.constraints.Email;

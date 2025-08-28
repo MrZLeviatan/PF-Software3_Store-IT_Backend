@@ -52,6 +52,10 @@ dependencies {
     // Driver JDBC para Oracle (versión 21.x)
     implementation("com.oracle.database.jdbc:ojdbc11:21.9.0.0")
 
+    // Mapper: Crea instancias de mapeo.
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
 }
 
 tasks.withType<Test>{
