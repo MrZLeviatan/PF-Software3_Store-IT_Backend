@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor  
+@NoArgsConstructor
 @Embeddable     // Esta clase será embebida en otras entidades, no se convierte en una tabla
 public class DatosLaborales {
 
