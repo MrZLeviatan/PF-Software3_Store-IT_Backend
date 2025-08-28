@@ -17,4 +17,10 @@ public class MensajeError {
     public static final String TELEFONO_INVALIDO = "Uno o más teléfonos no son válidos para el país indicado.";
 
     public static final String TELEFONO_YA_EXISTENTE = "Teléfono ya registrado en el sistema.";
+
+
+    // ---------- > PAIS <-----------------
+
+    public static final String PAIS_NO_ENCONTRADO = "País no encontrado o no registrado en el sistema.";
+
 }

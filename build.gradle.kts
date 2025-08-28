@@ -63,6 +63,9 @@ dependencies {
     implementation("org.simplejavamail:simple-java-mail:8.12.5")
     implementation("org.simplejavamail:batch-module:8.12.5")
 
+    // libphonenumber: Librería para los prefijos y los países
+    implementation("com.googlecode.libphonenumber:libphonenumber:8.13.30")
+
 }
 
 tasks.withType<Test>{
