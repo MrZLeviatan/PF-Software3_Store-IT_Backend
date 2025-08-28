@@ -33,10 +33,6 @@ public abstract class Persona {
     @Comment("Número telefónico principal de contacto (Opcional).")
     private String telefonoSecundario;
 
-    @Column(name = "imagen_perfil_url")
-    @Comment("URL de la imagen de perfil de la persona almacenada en Cloudinary. Si es empresa, logo de la empresa.")
-    private String imagenPerfil;
-
     @Embedded // Componente que se adhiere a la clase
     private User user;
 

@@ -13,7 +13,7 @@ import org.hibernate.annotations.Comment;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Embeddable
+@Embeddable     // Esta clase será embebida en otras entidades, no se convierte en una tabla
 public class User {
 
     @Email

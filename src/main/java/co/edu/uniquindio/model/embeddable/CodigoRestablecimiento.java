@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Embeddable
+@Embeddable // Esta clase será embebida en otras entidades, no se convierte en una tabla
 public class CodigoRestablecimiento {
 
     @Column(name = "codigo_restablecimiento")
