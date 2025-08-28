@@ -23,6 +23,10 @@ public class Cliente extends Persona{
     @Comment("Tipo Cliente que contrata el servicio. Natural o Jurídica.")
     private TipoCliente tipoCliente;
 
+    @Column(name = "NIT_empresa", nullable = true)
+    @Comment("NIT del cliente si es Juridico.")
+    private String nit;
+
     @Embedded
     private Ubicacion ubicacion;
 
