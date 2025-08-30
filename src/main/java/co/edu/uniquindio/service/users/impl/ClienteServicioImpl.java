@@ -8,7 +8,7 @@ import co.edu.uniquindio.model.entities.users.Cliente;
 import co.edu.uniquindio.repository.users.ClienteRepo;
 import co.edu.uniquindio.service.users.ClienteServicio;
 import co.edu.uniquindio.service.utils.PhoneService;
-import co.edu.uniquindio.service.utils.ValidacionCuentasServicio;
+import co.edu.uniquindio.service.utils.ValidacionCuentasService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class ClienteServicioImpl implements ClienteServicio {
     private final ClienteRepo clienteRexpo;
     private final ClienteMapper clienteMapper;
     private final PasswordEncoder passwordEncoder;
-    private final ValidacionCuentasServicio validacionCuentasServicio;
+    private final ValidacionCuentasService validacionCuentasService;
     private final PhoneService phoneService;
 
 
@@ -30,8 +30,8 @@ public class ClienteServicioImpl implements ClienteServicio {
             throws ElementoRepetidoException, ElementoNulosException {
 
         // 1. Validamos que el email y Teléfono no esté registrado
-        validacionCuentasServicio.validarEmailNoRepetido(crearClienteDto.user().email());
-        validacionCuentasServicio.validarTelefonoNoRepetido(crearClienteDto.telefono(),crearClienteDto.telefonoSecundario());
+        validacionCuentasService.validarEmailNoRepetido(crearClienteDto.user().email());
+        validacionCuentasService.validarTelefonoNoRepetido(crearClienteDto.telefono(),crearClienteDto.telefonoSecundario());
 
         // 2. Encriptamos contraseña
         String passwordEncriptada = passwordEncoder.encode(crearClienteDto.user().password());

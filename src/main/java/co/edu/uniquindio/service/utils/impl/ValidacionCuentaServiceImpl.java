@@ -6,7 +6,7 @@ import co.edu.uniquindio.exception.ElementoRepetidoException;
 import co.edu.uniquindio.model.entities.users.Persona;
 import co.edu.uniquindio.model.enums.EstadoCuenta;
 import co.edu.uniquindio.repository.users.ClienteRepo;
-import co.edu.uniquindio.service.utils.ValidacionCuentasServicio;
+import co.edu.uniquindio.service.utils.ValidacionCuentasService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ValidacionCuentaServicioImpl implements ValidacionCuentasServicio {
+public class ValidacionCuentaServiceImpl implements ValidacionCuentasService {
 
 
     private final ClienteRepo clienteRepo;

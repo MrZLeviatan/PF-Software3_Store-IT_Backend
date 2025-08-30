@@ -3,7 +3,7 @@ package co.edu.uniquindio.service.utils;
 import co.edu.uniquindio.exception.ElementoEliminadoException;
 import co.edu.uniquindio.exception.ElementoRepetidoException;
 
-public interface ValidacionCuentasServicio {
+public interface ValidacionCuentasService {
 
 
     void validarEmailNoRepetido(String email) throws ElementoRepetidoException, ElementoEliminadoException;
