@@ -4,6 +4,7 @@ import co.edu.uniquindio.Main;
 import co.edu.uniquindio.dto.common.UbicacionDto;
 import co.edu.uniquindio.dto.common.user.CrearUserDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteDto;
+import co.edu.uniquindio.dto.users.cliente.VerificacionClienteDto;
 import co.edu.uniquindio.model.enums.TipoCliente;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,8 @@ public class ClienteVerificacionControllerTest {
 
     private CrearClienteDto crearClienteDto;
 
+    private VerificacionClienteDto verificacionClienteDto;
+
     @BeforeEach
     void setUp() {
         CrearUserDto userDto = new CrearUserDto("nikis281002@gmail.com", "Password123");
@@ -47,7 +50,14 @@ public class ClienteVerificacionControllerTest {
                 TipoCliente.NATURAL,
                 null
         );
+
+
+        verificacionClienteDto = new VerificacionClienteDto(
+                "nikis281002@gmail.com",
+                "8DFD48"
+        );
     }
+
 
     @Test
     void registrarCliente_DeberiaEnviarEmailYRetornar200() throws Exception {
@@ -59,5 +69,18 @@ public class ClienteVerificacionControllerTest {
                 .andExpect(jsonPath("$.mensaje").value("Registro logrado exitosamente."))
                 .andExpect(jsonPath("$.error").value(false));
     }
+
+
+    @Test
+    void verificarCliente_DeberiaRetornar200YMensajeExito() throws Exception {
+        // 🚀 Ejecuta la petición REAL al endpoint de verificación
+        mockMvc.perform(post("/api/clienteBanner/verificar-registro")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(verificacionClienteDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mensaje").value("Cliente verificado con éxito."))
+                .andExpect(jsonPath("$.error").value(false));
+    }
+
 }
 
