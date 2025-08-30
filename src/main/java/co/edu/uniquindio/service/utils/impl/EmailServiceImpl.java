@@ -1,23 +1,79 @@
 package co.edu.uniquindio.service.utils.impl;
 
+import co.edu.uniquindio.dto.common.email.EmailDto;
+import co.edu.uniquindio.service.utils.EmailService;
+import lombok.RequiredArgsConstructor;
+import org.simplejavamail.api.mailer.Mailer;
+import org.simplejavamail.email.EmailBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.simplejavamail.api.email.Email;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 
 @Service
-public class EmailServiceImpl {
+@RequiredArgsConstructor
+public class EmailServiceImpl implements EmailService {
 
 
-    @Value("${smtp.host}")
-    private String host;  // Dirección del servidor SMTP
+    private final Mailer mailer;
 
-    @Value("${smtp.port}")
-    private String port; // Puerto del servidor SMTP
+    @Value("${smtp.from.address}")
+    private String fromAddress;
 
-    @Value("${smtp.user}")
-    private String user; // Correo electrónico del remitente (usado como autenticación)
+    @Value("${smtp.from.name}")
+    private String fromName;
 
-    @Value("${smtp.password}")
-    private String password;  // Contraseña del remitente
+    @Value("${app.verification.base-url}")
+    private String verificationBaseUrl;
+
+
+    @Override
+    public void enviarEmailVerificacion(EmailDto emailDto) {
+        try {
+            // 1. Cargar plantilla HTML
+            String htmlTemplate = loadHtmlTemplate("templates/verificacion.html");
+
+            // 2. Se agrega la url de verificación
+            String verificationUrl = verificationBaseUrl
+                    + "?email=" + URLEncoder.encode(emailDto.destinatario(), StandardCharsets.UTF_8)
+                    + "&codigo=" + URLEncoder.encode(emailDto.cuerpo(), StandardCharsets.UTF_8);
+
+            // 3. Reemplazar variables dinámicas
+            String cuerpoPersonalizado = htmlTemplate
+                    .replace("{{codigo}}", emailDto.cuerpo())
+                    .replace("{{verification_link}}", verificationUrl);
+
+
+            // 4. Construir el correo con Simple Java Mail
+            Email email = EmailBuilder.startingBlank()
+                    .from(fromName, fromAddress)
+                    .to(emailDto.destinatario())
+                    .withSubject(emailDto.asunto())
+                    .withHTMLText(cuerpoPersonalizado)
+                    .buildEmail();
+
+            // 5. Enviar el correo
+            mailer.sendMail(email);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error al cargar la plantilla del correo", e);
+        }
+    }
+
+
+    // Método auxiliar para leer un archivo HTML desde resources
+    private String loadHtmlTemplate(String path) throws IOException {
+        ClassPathResource resource = new ClassPathResource(path);
+        byte[] bytes = resource.getInputStream().readAllBytes();
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
 
 
 }

@@ -13,7 +13,7 @@ public interface ClienteMapper {
     @Mapping(target = "ubicacion", source = "ubicacion")
     @Mapping(target = "user", source = "user")
     @Mapping(target = "user.estadoCuenta", constant = "INACTIVA")
-    @Mapping(target = "user.codigoRestablecimiento", ignore = true)
+    @Mapping(target = "user.codigo", ignore = true)
     Cliente toEntity(CrearClienteDto clienteDTO);
 
 

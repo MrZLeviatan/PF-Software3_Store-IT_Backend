@@ -1,14 +1,16 @@
 package co.edu.uniquindio.service.users;
 
-import co.edu.uniquindio.dto.users.cliente.ClienteDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteDto;
+import co.edu.uniquindio.dto.users.cliente.VerificacionClienteDto;
+import co.edu.uniquindio.exception.ElementoNoEncontradoException;
 import co.edu.uniquindio.exception.ElementoNulosException;
 import co.edu.uniquindio.exception.ElementoRepetidoException;
 
-public interface ClienteServicio {
-
+public interface ClienteService {
 
 
     void registrarCliente(CrearClienteDto crearClienteDto)
             throws ElementoRepetidoException, ElementoNulosException;
+
+    void verificacionCliente(VerificacionClienteDto verificacionClienteDto) throws ElementoNoEncontradoException;
 }

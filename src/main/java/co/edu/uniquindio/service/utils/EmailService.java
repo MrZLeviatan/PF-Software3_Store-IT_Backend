@@ -1,9 +1,11 @@
 package co.edu.uniquindio.service.utils;
 
+import co.edu.uniquindio.dto.common.email.EmailDto;
+
 public interface EmailService {
 
 
-    void enviarEmail (String emailDestinatario,String asunto,String cuerpo);
+    void enviarEmailVerificacion (EmailDto emailDto);
 
 
 

@@ -31,6 +31,6 @@ public class User {
     private EstadoCuenta estadoCuenta;
 
     @Embedded
-    private CodigoRestablecimiento codigoRestablecimiento;
+    private Codigo codigo;
 
 }

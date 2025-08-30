@@ -16,10 +16,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Embeddable // Esta clase será embebida en otras entidades, no se convierte en una tabla
-public class CodigoRestablecimiento {
+public class Codigo {
 
-    @Column(name = "codigo_restablecimiento")
-    private String codigoRestablecimiento;
+    @Column(name = "clave")
+    private String clave;
 
     @Column(name = "fecha_restablecimiento_expiracion")
     private LocalDateTime fechaExpiracion;

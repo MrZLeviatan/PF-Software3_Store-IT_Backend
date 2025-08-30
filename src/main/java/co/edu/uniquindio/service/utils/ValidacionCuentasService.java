@@ -6,9 +6,11 @@ import co.edu.uniquindio.exception.ElementoRepetidoException;
 public interface ValidacionCuentasService {
 
 
-    void validarEmailNoRepetido(String email) throws ElementoRepetidoException, ElementoEliminadoException;
+    void validarEmailNoRepetido(String email)
+            throws ElementoRepetidoException, ElementoEliminadoException;
 
-    void validarTelefonoNoRepetido(String telefono, String telefonoSecundario) throws ElementoRepetidoException;
+    void validarTelefonoNoRepetido(String telefono, String telefonoSecundario)
+            throws ElementoRepetidoException;
 
 
 

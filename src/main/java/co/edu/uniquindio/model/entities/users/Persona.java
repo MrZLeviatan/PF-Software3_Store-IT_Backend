@@ -29,7 +29,7 @@ public abstract class Persona {
     @Comment("Número telefónico principal de contacto.")
     private String telefono;
 
-    @Column(name = "teléfono_secundario", nullable = false)
+    @Column(name = "teléfono_secundario", nullable = true)
     @Comment("Número telefónico principal de contacto (Opcional).")
     private String telefonoSecundario;
 
