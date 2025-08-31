@@ -7,6 +7,8 @@ public interface EmailService {
 
     void enviarEmailVerificacion (EmailDto emailDto);
 
+    void enviarEmailRegistroGoogle (EmailDto emailDto);
+
 
 
 }

@@ -81,7 +81,6 @@ public class ValidacionCuentaServiceImpl implements ValidacionCuentasService {
     }
 
 
-
     @Override
     public void validarTelefonoNoRepetido(String telefono, String telefonoSecundario) throws ElementoRepetidoException {
 

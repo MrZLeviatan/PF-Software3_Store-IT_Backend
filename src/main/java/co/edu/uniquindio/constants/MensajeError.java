@@ -30,4 +30,6 @@ public class MensajeError {
     // -----------> PERSONA <---------------------
     public static final String PERSONA_NO_ENCONTRADO = "Persona no encontrada o no registrada.";
 
+    public static final String DATOS_FALTANTES_REGISTRO_PERSONA = "Falta de datos para completar el registro";
+
 }

@@ -30,6 +30,10 @@ public class User {
     @Comment("Estado de la cuenta: ACTIVA, INACTIVA, ELIMINADA.")
     private EstadoCuenta estadoCuenta;
 
+    @Column(name = "registro_google")
+    @Comment("Indica si el usuario se registró mediante Google.")
+    private boolean registroGoogle;
+
     @Embedded
     private Codigo codigo;
 

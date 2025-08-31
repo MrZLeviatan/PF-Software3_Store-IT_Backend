@@ -68,6 +68,29 @@ public class EmailServiceImpl implements EmailService {
     }
 
 
+    @Override
+    public void enviarEmailRegistroGoogle(EmailDto emailDto) {
+        try {
+            // 1. Cargar plantilla HTML
+            String htmlTemplate = loadHtmlTemplate("templates/registroClienteGoogle.html");
+
+            // 2. Construir el correo con Simple Java Mail
+            Email email = EmailBuilder.startingBlank()
+                    .from(fromName, fromAddress)
+                    .to(emailDto.destinatario())
+                    .withSubject(emailDto.asunto())
+                    .withHTMLText(htmlTemplate)
+                    .buildEmail();
+
+            // 3. Enviar el correo
+            mailer.sendMail(email);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error al cargar la plantilla del correo", e);
+        }
+    }
+
+
     // Método auxiliar para leer un archivo HTML desde resources
     private String loadHtmlTemplate(String path) throws IOException {
         ClassPathResource resource = new ClassPathResource(path);

@@ -4,6 +4,7 @@ import co.edu.uniquindio.Main;
 import co.edu.uniquindio.dto.common.UbicacionDto;
 import co.edu.uniquindio.dto.common.user.CrearUserDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteDto;
+import co.edu.uniquindio.dto.users.cliente.CrearClienteGoogleDto;
 import co.edu.uniquindio.dto.users.cliente.VerificacionClienteDto;
 import co.edu.uniquindio.model.enums.TipoCliente;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,8 @@ public class ClienteVerificacionControllerTest {
 
     private CrearClienteDto crearClienteDto;
 
+    private CrearClienteGoogleDto crearClienteGoogleDto;
+
     private VerificacionClienteDto verificacionClienteDto;
 
     @BeforeEach
@@ -51,6 +54,17 @@ public class ClienteVerificacionControllerTest {
                 null
         );
 
+        crearClienteGoogleDto = new CrearClienteGoogleDto(
+                "Juan Pérez",
+                "3001234567",
+                "CO",
+                null,
+                null,
+                "nicolas.cabreras@uqvirtual.edu.co",
+                ubicacionDto
+        );
+
+
 
         verificacionClienteDto = new VerificacionClienteDto(
                 "nikis281002@gmail.com",
@@ -61,7 +75,7 @@ public class ClienteVerificacionControllerTest {
 
     @Test
     void registrarCliente_DeberiaEnviarEmailYRetornar200() throws Exception {
-        // 🚀 Ejecutamos la petición REAL al controlador, usando el servicio real (incluye email)
+        //  Ejecutamos la petición REAL al controlador, usando el servicio real (incluye email)
         mockMvc.perform(post("/api/clienteBanner/registro")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(crearClienteDto)))
@@ -73,12 +87,23 @@ public class ClienteVerificacionControllerTest {
 
     @Test
     void verificarCliente_DeberiaRetornar200YMensajeExito() throws Exception {
-        // 🚀 Ejecuta la petición REAL al endpoint de verificación
+        //  Ejecuta la petición REAL al endpoint de verificación
         mockMvc.perform(post("/api/clienteBanner/verificar-registro")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(verificacionClienteDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.mensaje").value("Cliente verificado con éxito."))
+                .andExpect(jsonPath("$.error").value(false));
+    }
+
+    @Test
+    void registroClienteGoogle_DeberiaEnviarEmailYRetornar200() throws Exception {
+        //  Ejecutamos la petición REAL al controlador, usando el servicio real (incluye email)
+        mockMvc.perform(post("/api/clienteBanner/registro-google")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(crearClienteGoogleDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mensaje").value("Registro logrado exitosamente."))
                 .andExpect(jsonPath("$.error").value(false));
     }
 
