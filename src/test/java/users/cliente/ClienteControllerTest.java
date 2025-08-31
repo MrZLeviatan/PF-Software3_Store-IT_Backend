@@ -23,8 +23,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ClienteBannerController.class)
-@ContextConfiguration(classes = Main.class) // 👈 le dices qué configuración usar
-@AutoConfigureMockMvc(addFilters = false) // 🚀 ignora seguridad
+@ContextConfiguration(classes = Main.class) // le dices qué configuración usar
+@AutoConfigureMockMvc(addFilters = false) // ignora seguridad
 class ClienteControllerTest {
 
     @Autowired
@@ -63,7 +63,7 @@ class ClienteControllerTest {
         Mockito.doNothing().when(clienteServicio).registrarCliente(Mockito.any());
 
         // 2. Ejecutamos la petición con MockMvc
-        mockMvc.perform(post("/api/clienteBanner/registro") // tu ruta real aquí
+        mockMvc.perform(post("/api/store-it/registro-clientes") // tu ruta real aquí
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(crearClienteDto)))
                 .andExpect(status().isOk()) // Debe responder 200 OK
@@ -90,7 +90,7 @@ class ClienteControllerTest {
         );
 
         // 2. Ejecutamos la petición
-        mockMvc.perform(post("/api/clienteBanner/registro")
+        mockMvc.perform(post("/api/store-it/registro-clientes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(clienteInvalido)))
                 .andExpect(status().isBadRequest()); // Debería fallar validación

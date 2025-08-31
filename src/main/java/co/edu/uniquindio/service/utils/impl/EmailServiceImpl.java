@@ -7,6 +7,7 @@ import org.simplejavamail.api.mailer.Mailer;
 import org.simplejavamail.email.EmailBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.simplejavamail.api.email.Email;
 import java.net.URLEncoder;
@@ -35,6 +36,7 @@ public class EmailServiceImpl implements EmailService {
 
 
     @Override
+    @Async
     public void enviarEmailVerificacion(EmailDto emailDto) {
         try {
             // 1. Cargar plantilla HTML
@@ -69,6 +71,7 @@ public class EmailServiceImpl implements EmailService {
 
 
     @Override
+    @Async
     public void enviarEmailRegistroGoogle(EmailDto emailDto) {
         try {
             // 1. Cargar plantilla HTML

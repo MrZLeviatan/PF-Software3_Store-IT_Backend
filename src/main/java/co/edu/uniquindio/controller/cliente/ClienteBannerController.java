@@ -17,15 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/clienteBanner") // Ubicado aquí si el registro es parte del flujo de autenticación
+@RequestMapping("/api/store-it") // Ubicado aquí si el registro es parte del flujo de autenticación
 @RequiredArgsConstructor
 public class ClienteBannerController {
 
     private final ClienteService clienteService;
 
 
-
-    @PostMapping("/registro")
+    @PostMapping("/registro-clientes")
     public ResponseEntity<MensajeDto<String>> registrarCliente(
             @Valid @RequestBody CrearClienteDto crearClienteDto)
             throws ElementoRepetidoException, ElementoNulosException {
@@ -36,7 +35,7 @@ public class ClienteBannerController {
     }
 
 
-    @PostMapping("/registro-google")
+    @PostMapping("/registro-clientes-google")
     public ResponseEntity<MensajeDto<String>> registrarClienteGoogle(
             @Valid @RequestBody CrearClienteGoogleDto crearClienteGoogleDto)
             throws ElementoRepetidoException, ElementoNulosException {
@@ -48,7 +47,7 @@ public class ClienteBannerController {
 
 
 
-    @PostMapping("/verificar-registro")
+    @PostMapping("/verificar-registro-clientes")
     public ResponseEntity<MensajeDto<String>> verificarRegistroCliente(
             @Valid @RequestBody VerificacionClienteDto verificacionClienteDto)
             throws ElementoNoEncontradoException {

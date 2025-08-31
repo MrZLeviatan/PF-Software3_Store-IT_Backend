@@ -43,6 +43,11 @@ dependencies {
     // Starter de Seguridad de Spring Boot: Agrega funciones de autenticación y seguridad
     implementation("org.springframework.boot:spring-boot-starter-security")
 
+    // Soporte para JSON via Jackson
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+
     // Lombok: Reduce el código repetitivo en clases Java (Getters, Setters, etc.)
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")

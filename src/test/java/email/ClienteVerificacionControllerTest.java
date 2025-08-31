@@ -19,9 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(classes = Main.class)
-@AutoConfigureMockMvc(addFilters = false)
-
+@SpringBootTest(classes = Main.class)       // Levantamos el test con todo y Spring
+@AutoConfigureMockMvc(addFilters = false)  // ignora seguridad
 public class ClienteVerificacionControllerTest {
 
 
@@ -76,7 +75,7 @@ public class ClienteVerificacionControllerTest {
     @Test
     void registrarCliente_DeberiaEnviarEmailYRetornar200() throws Exception {
         //  Ejecutamos la petición REAL al controlador, usando el servicio real (incluye email)
-        mockMvc.perform(post("/api/clienteBanner/registro")
+        mockMvc.perform(post("/api/store-it/registro-clientes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(crearClienteDto)))
                 .andExpect(status().isOk())
@@ -88,7 +87,7 @@ public class ClienteVerificacionControllerTest {
     @Test
     void verificarCliente_DeberiaRetornar200YMensajeExito() throws Exception {
         //  Ejecuta la petición REAL al endpoint de verificación
-        mockMvc.perform(post("/api/clienteBanner/verificar-registro")
+        mockMvc.perform(post("/api/store-it/verificar-registro-clientes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(verificacionClienteDto)))
                 .andExpect(status().isOk())
@@ -99,7 +98,7 @@ public class ClienteVerificacionControllerTest {
     @Test
     void registroClienteGoogle_DeberiaEnviarEmailYRetornar200() throws Exception {
         //  Ejecutamos la petición REAL al controlador, usando el servicio real (incluye email)
-        mockMvc.perform(post("/api/clienteBanner/registro-google")
+        mockMvc.perform(post("/api/store-it/registro-clientes-google")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(crearClienteGoogleDto)))
                 .andExpect(status().isOk())

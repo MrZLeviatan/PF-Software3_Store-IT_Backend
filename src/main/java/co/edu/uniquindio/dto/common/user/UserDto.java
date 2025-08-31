@@ -9,7 +9,7 @@ public record UserDto(
     @Email String email,
     String password,
     EstadoCuenta estadoCuenta,
-    CodigoRestablecimientoDto codigoRestablecimiento
+    CodigoDto codigoRestablecimiento
 
 
 ) {
