@@ -1,7 +1,8 @@
 package co.edu.uniquindio.service.utils;
 
+import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
+import co.edu.uniquindio.exception.ElementoNoEncontradoException;
 import co.edu.uniquindio.model.embeddable.Codigo;
-import org.springframework.stereotype.Service;
 
 
 public interface CodigoService {
@@ -9,5 +10,9 @@ public interface CodigoService {
 
     Codigo generarCodigoVerificacion2AF();
 
-    Codigo generarCodigoVerificacionRegistro();
+
+    Codigo generarCodigoRestablecerPassword();
+
+    void autentificarCodigo(VerificacionCodigoDto verificacionCodigoDto)
+            throws ElementoNoEncontradoException;
 }

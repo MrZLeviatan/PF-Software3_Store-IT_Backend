@@ -9,8 +9,6 @@ public interface EmailService {
 
     void enviarEmailRegistroGoogle (EmailDto emailDto);
 
-    void enviarEmailVerificacionLogin(EmailDto emailDto);
-
-
+    void enviarEmailCodigo(EmailDto emailDto, String rutaHtml);
 
 }

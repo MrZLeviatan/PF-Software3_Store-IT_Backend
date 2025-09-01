@@ -17,5 +17,8 @@ public interface PersonalBodegaRepo extends JpaRepository<PersonalBodega, Long>,
 
     boolean existsByTelefonoOrTelefonoSecundario(String telefono, String telefonoSecundario);
 
+    boolean existsByTelefono(String telefono);
+
+
 
 }

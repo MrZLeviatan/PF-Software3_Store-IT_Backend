@@ -19,4 +19,6 @@ public interface ClienteRepo extends JpaRepository<Cliente, Long>, JpaSpecificat
 
     boolean existsByTelefonoOrTelefonoSecundario(String telefono, String telefonoSecundario);
 
+    boolean existsByTelefono(String telefono);
+
 }

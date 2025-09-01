@@ -79,7 +79,7 @@ public class ClienteServiceImpl implements ClienteService {
         cliente.getUser().setPassword(passwordEncriptada);
 
         // 6. Asignar el código de verificación al usuario.
-        Codigo codigoVerificacion = codigoService.generarCodigoVerificacionRegistro();
+        Codigo codigoVerificacion = codigoService.generarCodigoVerificacion2AF();
         cliente.getUser().setCodigo(codigoVerificacion);
 
         // 7. Enviar código de verificación al email del cliente.
@@ -101,15 +101,14 @@ public class ClienteServiceImpl implements ClienteService {
         // 1. Obtenemos al cliente con el email proporcionado.
         Cliente cliente = obtenerClientePorEmail(verificacionCodigoDto.email());
 
-        // 2. Verificamos la fecha de expiración.
-        if (cliente.getUser().getCodigo().getFechaExpiracion().isBefore(LocalDateTime.now())) {
-            throw new ElementoNoValido(MensajeError.CODIGO_EXPIRADO);}
+        codigoService.autentificarCodigo(verificacionCodigoDto);
 
-        // 3. Verificamos si el código coincide.
-        if (!cliente.getUser().getCodigo().getClave().equals(verificacionCodigoDto.codigo())){
-            throw new ElementoNoValido(MensajeError.CODIGO_NO_VALIDO);}
+        // 4. Verificamos si la cuenta ya está activada
+        if (cliente.getUser().getEstadoCuenta().equals(EstadoCuenta.ACTIVO)){
+            throw new ElementoNoValido(MensajeError.CUENTA_ACTIVADA);
+        }
 
-        // 4. Cambiamos el estado de la cuenta del cliente y guardamos en la base de datos.
+        // 5. Cambiamos el estado de la cuenta del cliente y guardamos en la base de datos.
         cliente.getUser().setEstadoCuenta(EstadoCuenta.ACTIVO);
         clienteRepo.save(cliente);
     }

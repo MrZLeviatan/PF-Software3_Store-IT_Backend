@@ -4,6 +4,7 @@ import co.edu.uniquindio.constants.MensajeError;
 import co.edu.uniquindio.dto.common.email.EmailDto;
 import co.edu.uniquindio.exception.ElementoEliminadoException;
 import co.edu.uniquindio.exception.ElementoNoEncontradoException;
+import co.edu.uniquindio.exception.ElementoNoValido;
 import co.edu.uniquindio.exception.ElementoRepetidoException;
 import co.edu.uniquindio.model.embeddable.Codigo;
 import co.edu.uniquindio.model.entities.users.Cliente;
@@ -93,17 +94,35 @@ public class PersonaUtilServiceImpl implements PersonaUtilService {
 
 
     @Override
-    public void validarTelefonoNoRepetido(String telefono, String telefonoSecundario) throws ElementoRepetidoException {
+    public void validarTelefonoNoRepetido(String telefono, String telefonoSecundario)
+            throws ElementoRepetidoException, ElementoNoValido {
 
-        // Buscar si existe en teléfono principal o secundario
-        boolean existe =
-                clienteRepo.existsByTelefonoOrTelefonoSecundario(telefono, telefonoSecundario) ||
-                        recursosHumanosRepo.existsByTelefonoOrTelefonoSecundario(telefono,telefonoSecundario) ||
-                        personalBodegaRepo.existsByTelefonoOrTelefonoSecundario(telefono, telefonoSecundario);
+        // Si el teléfono principal es nulo, no se puede validar
+        if (telefono == null || telefono.isBlank()) {
+            throw new ElementoNoValido(MensajeError.TELEFONO_VACIO);
+        }
+
+        boolean existe;
+
+        if (telefonoSecundario == null || telefonoSecundario.isBlank()) {
+            // Solo validar el teléfono principal
+            existe =
+                    clienteRepo.existsByTelefono(telefono) ||
+                            recursosHumanosRepo.existsByTelefono(telefono) ||
+                            personalBodegaRepo.existsByTelefono(telefono);
+        } else {
+            // Validar ambos teléfonos
+            existe =
+                    clienteRepo.existsByTelefonoOrTelefonoSecundario(telefono, telefonoSecundario) ||
+                            recursosHumanosRepo.existsByTelefonoOrTelefonoSecundario(telefono, telefonoSecundario) ||
+                            personalBodegaRepo.existsByTelefonoOrTelefonoSecundario(telefono, telefonoSecundario);
+        }
 
         if (existe) {
             throw new ElementoRepetidoException(MensajeError.TELEFONO_YA_EXISTENTE);
-        }}
+        }
+    }
+
 
 
 

@@ -93,18 +93,17 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+
     @Override
     @Async
-    public void enviarEmailVerificacionLogin(EmailDto emailDto) {
+    public void  enviarEmailCodigo(EmailDto emailDto, String rutaHtml) {
         try {
             // 1. Cargar plantilla HTML
-            String htmlTemplate = loadHtmlTemplate("templates/verificacion-login.html");
-
+            String htmlTemplate = loadHtmlTemplate("templates/"+ rutaHtml);
 
             // 2. Reemplazar variables dinámicas
             String cuerpoPersonalizado = htmlTemplate
                     .replace("{{codigo}}", emailDto.cuerpo());
-
 
             // 3. Construir el correo con Simple Java Mail
             Email email = EmailBuilder.startingBlank()
@@ -121,6 +120,7 @@ public class EmailServiceImpl implements EmailService {
             throw new RuntimeException("Error al cargar la plantilla del correo", e);
         }
     }
+
 
 
     // Método auxiliar para leer un archivo HTML desde resources

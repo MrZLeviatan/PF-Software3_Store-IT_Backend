@@ -17,4 +17,7 @@ public interface RecursosHumanosRepo extends JpaRepository<RecursosHumanos, Long
 
     boolean existsByTelefonoOrTelefonoSecundario(String telefono, String telefonoSecundario);
 
+    boolean existsByTelefono(String telefono);
+
+
 }

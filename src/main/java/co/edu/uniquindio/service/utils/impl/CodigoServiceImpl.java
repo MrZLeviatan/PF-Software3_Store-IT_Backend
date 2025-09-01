@@ -1,8 +1,14 @@
 package co.edu.uniquindio.service.utils.impl;
 
+import co.edu.uniquindio.constants.MensajeError;
+import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
+import co.edu.uniquindio.exception.ElementoNoEncontradoException;
+import co.edu.uniquindio.exception.ElementoNoValido;
 import co.edu.uniquindio.model.embeddable.Codigo;
+import co.edu.uniquindio.model.entities.users.Persona;
 import co.edu.uniquindio.model.enums.TipoCodigo;
 import co.edu.uniquindio.service.utils.CodigoService;
+import co.edu.uniquindio.service.utils.PersonaUtilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +20,8 @@ import java.util.UUID;
 public class CodigoServiceImpl implements CodigoService {
 
 
+    private PersonaUtilService personaUtilService;
+
 
     @Override
     public Codigo generarCodigoVerificacion2AF() {
@@ -21,20 +29,40 @@ public class CodigoServiceImpl implements CodigoService {
         Codigo codigoVerificacion = new Codigo();
         codigoVerificacion.setClave(generacionClave());
         codigoVerificacion.setTipoCodigo(TipoCodigo.VERIFICACION_2FA);
-        codigoVerificacion.setFechaExpiracion(LocalDateTime.now().plusMinutes(10));
+        codigoVerificacion.setFechaExpiracion(LocalDateTime.now().plusMinutes(15));
 
         return codigoVerificacion;
     }
 
     @Override
-    public Codigo generarCodigoVerificacionRegistro() {
+    public Codigo generarCodigoRestablecerPassword() {
 
-        Codigo codigoVerificacion = new Codigo();
-        codigoVerificacion.setClave(generacionClave());
-        codigoVerificacion.setTipoCodigo(TipoCodigo.VERIFICACION_2FA);
-        codigoVerificacion.setFechaExpiracion(LocalDateTime.now().plusMinutes(15));
+        Codigo codigoRestablecerPassword = new Codigo();
+        codigoRestablecerPassword.setClave(generacionClave());
+        codigoRestablecerPassword.setTipoCodigo(TipoCodigo.RESTABLECER_PASSWORD);
+        codigoRestablecerPassword.setFechaExpiracion(LocalDateTime.now().plusMinutes(15));
 
-        return codigoVerificacion;
+        return codigoRestablecerPassword;
+    }
+
+
+    @Override
+    public void autentificarCodigo(VerificacionCodigoDto verificacionCodigoDto) throws ElementoNoEncontradoException {
+
+        Persona personaOpt = personaUtilService.buscarPersonaPorEmail(verificacionCodigoDto.email());
+
+        // 2. Verificamos la fecha de expiración.
+        if (personaOpt.getUser().getCodigo().getFechaExpiracion().isBefore(LocalDateTime.now())){
+            throw new ElementoNoValido(MensajeError.CODIGO_EXPIRADO);}
+
+        // 3. Verificamos si el código coincide.
+        if (!personaOpt.getUser().getCodigo().getClave().equals(verificacionCodigoDto.codigo())){
+            throw new ElementoNoValido(MensajeError.CODIGO_NO_VALIDO);}
+
+        // Limpiar el código de restablecimiento
+        personaOpt.getUser().setCodigo(null);
+
+        personaUtilService.guardarPersonaBD(personaOpt);
     }
 
 

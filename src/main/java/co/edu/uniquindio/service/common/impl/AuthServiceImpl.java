@@ -2,7 +2,9 @@ package co.edu.uniquindio.service.common.impl;
 
 import co.edu.uniquindio.constants.MensajeError;
 import co.edu.uniquindio.dto.TokenDto;
+import co.edu.uniquindio.dto.common.auth.ActualizarPasswordDto;
 import co.edu.uniquindio.dto.common.auth.LoginDto;
+import co.edu.uniquindio.dto.common.auth.SolicitudEmailDto;
 import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
 import co.edu.uniquindio.dto.common.email.EmailDto;
 import co.edu.uniquindio.exception.*;
@@ -19,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -41,15 +42,15 @@ public class AuthServiceImpl implements AuthService {
 
         if (autentificarPassword(personaOpt, loginDto.password())) {
 
-            // 7. Asignar el código de verificación al usuario.
+            // 2. Asignar el código de verificación al usuario.
             Codigo codigoVerificacion = codigoService.generarCodigoVerificacion2AF();
             personaOpt.getUser().setCodigo(codigoVerificacion);
 
-            // 8. Enviar código de verificación al email del cliente.
+            // 3. Enviar código de verificación al email del cliente.
             EmailDto emailDto = new EmailDto(
                     personaOpt.getUser().getEmail(),codigoVerificacion.getClave(),
-                    "Código de inicio de Sesión - Store IT!: " + codigoVerificacion);
-            emailService.enviarEmailVerificacionLogin(emailDto);
+                    "Código de inicio de Sesión - Store IT!: " + codigoVerificacion.getClave());
+            emailService.enviarEmailCodigo(emailDto, "verificacion-login.html");
             personaUtilService.guardarPersonaBD(personaOpt);
 
         }
@@ -59,12 +60,24 @@ public class AuthServiceImpl implements AuthService {
     public boolean autentificarPassword(Persona persona, String password)
             throws ElementoRepetidoException, ElementoIncorrectoException {
 
-        // 1. Verificar si la cuenta no ha sido activada
+        // 1. Verificar a la persona y su estado.
+        validarEstadoPersona(persona);
 
+        // 2. Verificamos si las credenciales coinciden.
+        if (!passwordEncoder.matches(password, persona.getUser().getPassword())) {
+            throw new ElementoIncorrectoException(MensajeError.PASSWORD_INCORRECTO);}
+
+        return true;
+    }
+
+
+    private void validarEstadoPersona(Persona persona) throws ElementoIncorrectoException {
+
+        // 1. Verificar si la cuenta no ha sido activada
         if (persona.getUser().getEstadoCuenta().equals(EstadoCuenta.INACTIVA)){
 
             // Generamos un nuevo código de verificación
-            Codigo codigoVerificacion = codigoService.generarCodigoVerificacionRegistro();
+            Codigo codigoVerificacion = codigoService.generarCodigoVerificacion2AF();
 
             persona.getUser().setCodigo(codigoVerificacion);
 
@@ -95,11 +108,6 @@ public class AuthServiceImpl implements AuthService {
             // Para otros usuarios (Agente, Personal, RRHH) simplemente cuenta eliminada
             throw new ElementoEliminadoException(MensajeError.CUENTA_ELIMINADA);
         }
-
-        if (!passwordEncoder.matches(password, persona.getUser().getPassword())) {
-            throw new ElementoIncorrectoException(MensajeError.PASSWORD_INCORRECTO);}
-
-        return true;
     }
 
 
@@ -111,18 +119,55 @@ public class AuthServiceImpl implements AuthService {
 
         Persona personaOpt = personaUtilService.buscarPersonaPorEmail(verificacionLoginDto.email());
 
-        // 2. Verificamos la fecha de expiración.
-        if (personaOpt.getUser().getCodigo().getFechaExpiracion().isBefore(LocalDateTime.now())){
-            throw new ElementoNoValido(MensajeError.CODIGO_EXPIRADO);}
-
-        // 3. Verificamos si el código coincide.
-        if (!personaOpt.getUser().getCodigo().getClave().equals(verificacionLoginDto.codigo())){
-            throw new ElementoNoValido(MensajeError.CODIGO_NO_VALIDO);}
+        codigoService.autentificarCodigo(verificacionLoginDto);
 
         // 4. Generar y retornar el token JWT con los datos del cliente
             token = jwtUtils.generateToken(personaOpt.getId().toString(),jwtUtils.generarTokenLogin(personaOpt));
 
         return new TokenDto(token);
+    }
+
+
+    @Override
+    public void solicitarRestablecimientoPassword(SolicitudEmailDto solicitudEmailDto)
+            throws ElementoIncorrectoException, ElementoNoEncontradoException {
+
+        Persona personaOpt = personaUtilService.buscarPersonaPorEmail(solicitudEmailDto.email());
+
+        validarEstadoPersona(personaOpt);
+
+
+        // 2. Asignar el código de verificación al usuario.
+        Codigo codigoVerificacion = codigoService.generarCodigoRestablecerPassword();
+        personaOpt.getUser().setCodigo(codigoVerificacion);
+
+        // 3. Enviar código de verificación al email del cliente.
+        EmailDto emailDto = new EmailDto(
+                personaOpt.getUser().getEmail(),codigoVerificacion.getClave(),
+                "Código de restablecimiento de Contraseña - Store-IT!");
+        emailService.enviarEmailCodigo(emailDto,"codigoRestablecerPassword.html");
+
+        personaUtilService.guardarPersonaBD(personaOpt);
+
+    }
+
+    @Override
+    public void verificarCodigoPassword(VerificacionCodigoDto verificacionCodigoDto)
+            throws ElementoNoEncontradoException {
+        codigoService.autentificarCodigo(verificacionCodigoDto);
+    }
+
+    @Override
+    public void actualizarPassword(ActualizarPasswordDto actualizarPasswordDto)
+            throws ElementoNoEncontradoException {
+
+        Persona personaPot = personaUtilService.buscarPersonaPorEmail(actualizarPasswordDto.email());
+
+        // Actualizar la contraseña (encriptándola)
+        personaPot.getUser().setPassword(passwordEncoder.encode(actualizarPasswordDto.nuevaPassword()));
+
+        personaUtilService.guardarPersonaBD(personaPot);
+
     }
 
 

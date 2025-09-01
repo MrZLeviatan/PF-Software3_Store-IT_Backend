@@ -35,18 +35,8 @@ public class JWTUtils {
     private static final String SECRET = "store-it-secret-key-para-firmar-tokens-jwt-de-forma-segura";
 
 
-    /**
-     * Genera un token JWT con los datos proporcionados.
-     * Este token es utilizado para autenticar y autorizar al usuario en el sistema.
-     * <p>
-     * El token contiene información adicional (claims), un subject (normalmente el ID del usuario),
-     * una fecha de emisión y una fecha de expiración.
-     * </p>
-     *
-     * @param id El identificador del usuario que será el subject del token.
-     * @param claims Un mapa de claims que contiene información adicional que se incluirá en el token.
-     * @return Un token JWT como cadena de texto.
-     */
+
+    // Genera un token JWT con los datos proporcionados. Este token es utilizado para autenticar y autorizar al usuario en el sistema.
     public String generateToken(String id, Map<String, String> claims) {
 
         // Se obtiene el instante actual para usar como fecha de emisión y para la expiración
@@ -57,7 +47,7 @@ public class JWTUtils {
                 .subject(id) // ID del usuario
                 .issuedAt(Date.from(now)) // Fecha de emisión
                 .expiration(Date.from(now.plus(1L, ChronoUnit.HOURS))) // Expira en 1 hora
-                .claims(claims) // ✅ Añade los claims personalizados como el tipo de usuario
+                .claims(claims) // Añade los claims personalizados como el tipo de usuario
                 .signWith(getKey(), Jwts.SIG.HS256) // Firma el token con HS256
                 .compact();
     }

@@ -16,6 +16,8 @@ public class MensajeError {
 
     public static final String TELEFONO_YA_EXISTENTE = "Teléfono ya registrado en el sistema.";
 
+    public static final String TELEFONO_VACIO = "El teléfono principal no puede ser nulo o vacío";
+
 
     // ---------- > PAIS <-----------------
     public static final String PAIS_NO_ENCONTRADO = "País no encontrado o no registrado en el sistema.";
@@ -43,6 +45,8 @@ public class MensajeError {
     public static final String CUENTA_ELIMINADA = "La cuenta se encuentra eliminada.";
 
     public static final String PERSONA_NO_ROL = "Tipo de usuario desconocido";
+
+    public static final String CUENTA_ACTIVADA = "La cuenta ya se encuentra verificada";
 
 
 }

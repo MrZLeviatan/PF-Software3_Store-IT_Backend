@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = Main.class)       // Levantamos el test con todo y Spring
 @AutoConfigureMockMvc(addFilters = false)  // ignora seguridad
-public class ClienteVerificacionControllerTest {
+public class EmailControllerTest {
 
 
     @Autowired
@@ -43,7 +43,7 @@ public class ClienteVerificacionControllerTest {
 
         crearClienteDto = new CrearClienteDto(
                 "Juan Pérez",
-                "3001234567",
+                "3001234990",
                 "CO",
                 null,
                 null,
@@ -67,7 +67,7 @@ public class ClienteVerificacionControllerTest {
 
         verificacionCodigoDto = new VerificacionCodigoDto(
                 "nikis281002@gmail.com",
-                "8DFD48"
+                "2BF6E0"
         );
     }
 
