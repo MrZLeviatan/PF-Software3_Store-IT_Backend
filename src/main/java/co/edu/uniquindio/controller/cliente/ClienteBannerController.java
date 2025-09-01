@@ -4,9 +4,7 @@ import co.edu.uniquindio.dto.MensajeDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteGoogleDto;
 import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
-import co.edu.uniquindio.exception.ElementoNoEncontradoException;
-import co.edu.uniquindio.exception.ElementoNulosException;
-import co.edu.uniquindio.exception.ElementoRepetidoException;
+import co.edu.uniquindio.exception.*;
 import co.edu.uniquindio.service.users.ClienteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +25,7 @@ public class ClienteBannerController {
     @PostMapping("/registro-clientes")
     public ResponseEntity<MensajeDto<String>> registrarCliente(
             @Valid @RequestBody CrearClienteDto crearClienteDto)
-            throws ElementoRepetidoException, ElementoNulosException {
+            throws ElementoRepetidoException, ElementoNulosException, ElementoEliminadoException {
 
         clienteService.registrarCliente(crearClienteDto);
 
@@ -38,7 +36,7 @@ public class ClienteBannerController {
     @PostMapping("/registro-clientes-google")
     public ResponseEntity<MensajeDto<String>> registrarClienteGoogle(
             @Valid @RequestBody CrearClienteGoogleDto crearClienteGoogleDto)
-            throws ElementoRepetidoException, ElementoNulosException {
+            throws ElementoRepetidoException, ElementoNulosException, ElementoEliminadoException {
 
         clienteService.registroClienteGoogle(crearClienteGoogleDto);
 
@@ -50,7 +48,7 @@ public class ClienteBannerController {
     @PostMapping("/verificar-registro-clientes")
     public ResponseEntity<MensajeDto<String>> verificarRegistroCliente(
             @Valid @RequestBody VerificacionCodigoDto verificacionCodigoDto)
-            throws ElementoNoEncontradoException {
+            throws ElementoNoEncontradoException, ElementoNoValido {
 
         clienteService.verificacionCliente(verificacionCodigoDto);
         return ResponseEntity.ok(new MensajeDto<>(false ,"Cliente verificado con éxito."));

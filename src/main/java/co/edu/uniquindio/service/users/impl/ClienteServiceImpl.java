@@ -5,10 +5,7 @@ import co.edu.uniquindio.dto.common.email.EmailDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteGoogleDto;
 import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
-import co.edu.uniquindio.exception.ElementoNoEncontradoException;
-import co.edu.uniquindio.exception.ElementoNoValido;
-import co.edu.uniquindio.exception.ElementoNulosException;
-import co.edu.uniquindio.exception.ElementoRepetidoException;
+import co.edu.uniquindio.exception.*;
 import co.edu.uniquindio.mapper.users.ClienteMapper;
 import co.edu.uniquindio.model.embeddable.Codigo;
 import co.edu.uniquindio.model.entities.users.Cliente;
@@ -44,7 +41,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public void registrarCliente(CrearClienteDto crearClienteDto)
-            throws ElementoRepetidoException, ElementoNulosException {
+            throws ElementoRepetidoException, ElementoNulosException, ElementoEliminadoException {
 
         // 0.1. Formateamos los teléfonos
         String telefonoFormateado = phoneService.obtenerTelefonoFormateado(crearClienteDto.telefono(), crearClienteDto.codigoPais());
@@ -96,27 +93,51 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public void verificacionCliente(VerificacionCodigoDto verificacionCodigoDto)
-            throws ElementoNoEncontradoException {
+            throws ElementoNoEncontradoException, ElementoNoValido  {
 
         // 1. Obtenemos al cliente con el email proporcionado.
         Cliente cliente = obtenerClientePorEmail(verificacionCodigoDto.email());
 
-        codigoService.autentificarCodigo(verificacionCodigoDto);
-
-        // 4. Verificamos si la cuenta ya está activada
+        // 2. Verificamos si la cuenta ya está activada
         if (cliente.getUser().getEstadoCuenta().equals(EstadoCuenta.ACTIVO)){
             throw new ElementoNoValido(MensajeError.CUENTA_ACTIVADA);
         }
 
+        // 3. Verificamos la fecha de expiración.
+        if (cliente.getUser().getCodigo().getFechaExpiracion().isBefore(LocalDateTime.now())){
+
+            Codigo codigoVerificacion = codigoService.generarCodigoVerificacion2AF();
+            cliente.getUser().setCodigo(codigoVerificacion);
+
+            clienteRepo.save(cliente);
+
+            // Enviar correo con el nuevo código
+            EmailDto emailDto = new EmailDto(
+                    cliente.getUser().getEmail(),
+                    codigoVerificacion.getClave(),
+                    "Reverificación de Cuenta - Store-It"
+            );
+
+            emailService.enviarEmailVerificacionRegistro(emailDto);
+
+            throw new ElementoNoValido(MensajeError.CODIGO_EXPIRADO);
+        }
+
+        // 4. Verificamos si el código coincide.
+        if (!cliente.getUser().getCodigo().getClave().equals(verificacionCodigoDto.codigo())){
+            throw new ElementoNoValido(MensajeError.CODIGO_NO_VALIDO);}
+
+
         // 5. Cambiamos el estado de la cuenta del cliente y guardamos en la base de datos.
         cliente.getUser().setEstadoCuenta(EstadoCuenta.ACTIVO);
+        cliente.getUser().setCodigo(null);
         clienteRepo.save(cliente);
     }
 
 
 
     @Override
-    public void registroClienteGoogle(CrearClienteGoogleDto crearClienteGoogleDto) throws ElementoRepetidoException, ElementoNulosException {
+    public void registroClienteGoogle(CrearClienteGoogleDto crearClienteGoogleDto) throws ElementoRepetidoException, ElementoNulosException, ElementoEliminadoException {
 
         // 0.1. Formateamos los teléfonos
         String telefonoFormateado = phoneService.obtenerTelefonoFormateado(crearClienteGoogleDto.telefono(), crearClienteGoogleDto.codigoPais());
@@ -160,7 +181,7 @@ public class ClienteServiceImpl implements ClienteService {
     private Cliente obtenerClientePorEmail(String email) throws ElementoNoEncontradoException {
         return clienteRepo.findByUser_Email(email)
                 .orElseThrow(() ->
-                        new ElementoNoEncontradoException(MensajeError.PERSONA_NO_ENCONTRADO + email));
+                        new ElementoNoEncontradoException(MensajeError.PERSONA_NO_ENCONTRADO));
     }
 
 }

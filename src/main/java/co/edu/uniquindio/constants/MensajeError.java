@@ -8,13 +8,13 @@ public class MensajeError {
 
     public static final String EMAIL_YA_EXISTE = "El correo electrónico ya se encuentra registrado.";
 
-    public static final String EMAIL_CUENTA_ELIMINADA = "El email pertenece a una cuenta eliminada.";
+    public static final String EMAIL_CUENTA_ELIMINADA = "El correo pertenece a una cuenta eliminada.";
 
 
     // --------- > TELÉFONO <----------------
     public static final String TELEFONO_INVALIDO = "Uno o más teléfonos no son válidos para el país indicado.";
 
-    public static final String TELEFONO_YA_EXISTENTE = "Teléfono ya registrado en el sistema.";
+    public static final String TELEFONO_YA_EXISTENTE = "El teléfono ya está registrado";
 
     public static final String TELEFONO_VACIO = "El teléfono principal no puede ser nulo o vacío";
 
@@ -38,7 +38,7 @@ public class MensajeError {
 
     // -----------> PERSONA <---------------------
 
-    public static final String PERSONA_NO_ENCONTRADO = "Persona no encontrada o no registrada.";
+    public static final String PERSONA_NO_ENCONTRADO = "Persona no encontrada o no registrada";
 
     public static final String DATOS_FALTANTES_REGISTRO_PERSONA = "Falta de datos para completar el registro";
 

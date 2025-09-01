@@ -6,6 +6,7 @@ import co.edu.uniquindio.dto.common.auth.ActualizarPasswordDto;
 import co.edu.uniquindio.dto.common.auth.LoginDto;
 import co.edu.uniquindio.dto.common.auth.SolicitudEmailDto;
 import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
+import co.edu.uniquindio.exception.ElementoEliminadoException;
 import co.edu.uniquindio.exception.ElementoIncorrectoException;
 import co.edu.uniquindio.exception.ElementoNoEncontradoException;
 import co.edu.uniquindio.exception.ElementoRepetidoException;
@@ -26,7 +27,7 @@ public class AuthController {
 
     @PostMapping("/login")
     private ResponseEntity<MensajeDto<String>> login (@Valid @RequestBody LoginDto loginDto)
-            throws ElementoRepetidoException, ElementoIncorrectoException, ElementoNoEncontradoException {
+            throws ElementoRepetidoException, ElementoIncorrectoException, ElementoNoEncontradoException, ElementoEliminadoException {
 
         authService.login(loginDto);
 
@@ -46,7 +47,7 @@ public class AuthController {
 
     @PostMapping("/restablecer-password")
     public ResponseEntity<MensajeDto<String>> solicitarRestablecimientoPassword(@RequestBody @Valid SolicitudEmailDto dto)
-            throws ElementoNoEncontradoException, ElementoIncorrectoException {
+            throws ElementoNoEncontradoException, ElementoIncorrectoException, ElementoEliminadoException {
         authService.solicitarRestablecimientoPassword(dto);
         return ResponseEntity.ok().body(new MensajeDto<>(false,"Solicitud de restablecimiento de contraseña enviada"));
     }

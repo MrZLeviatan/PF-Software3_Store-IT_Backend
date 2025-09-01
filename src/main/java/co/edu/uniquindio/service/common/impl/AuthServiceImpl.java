@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void login(LoginDto loginDto)
-            throws ElementoNoEncontradoException, ElementoRepetidoException, ElementoIncorrectoException {
+            throws ElementoNoEncontradoException, ElementoRepetidoException, ElementoIncorrectoException, ElementoEliminadoException {
 
         Persona personaOpt = personaUtilService.buscarPersonaPorEmail(loginDto.email());
 
@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     public boolean autentificarPassword(Persona persona, String password)
-            throws ElementoRepetidoException, ElementoIncorrectoException {
+            throws ElementoRepetidoException, ElementoIncorrectoException, ElementoEliminadoException {
 
         // 1. Verificar a la persona y su estado.
         validarEstadoPersona(persona);
@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-    private void validarEstadoPersona(Persona persona) throws ElementoIncorrectoException {
+    private void validarEstadoPersona(Persona persona) throws ElementoIncorrectoException, ElementoEliminadoException {
 
         // 1. Verificar si la cuenta no ha sido activada
         if (persona.getUser().getEstadoCuenta().equals(EstadoCuenta.INACTIVA)){
@@ -130,7 +130,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void solicitarRestablecimientoPassword(SolicitudEmailDto solicitudEmailDto)
-            throws ElementoIncorrectoException, ElementoNoEncontradoException {
+            throws ElementoIncorrectoException, ElementoNoEncontradoException, ElementoEliminadoException {
 
         Persona personaOpt = personaUtilService.buscarPersonaPorEmail(solicitudEmailDto.email());
 

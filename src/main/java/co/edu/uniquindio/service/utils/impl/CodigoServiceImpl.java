@@ -20,7 +20,7 @@ import java.util.UUID;
 public class CodigoServiceImpl implements CodigoService {
 
 
-    private PersonaUtilService personaUtilService;
+    private final PersonaUtilService personaUtilService;
 
 
     @Override
@@ -47,13 +47,15 @@ public class CodigoServiceImpl implements CodigoService {
 
 
     @Override
-    public void autentificarCodigo(VerificacionCodigoDto verificacionCodigoDto) throws ElementoNoEncontradoException {
+    public void autentificarCodigo(VerificacionCodigoDto verificacionCodigoDto)
+            throws ElementoNoEncontradoException {
 
         Persona personaOpt = personaUtilService.buscarPersonaPorEmail(verificacionCodigoDto.email());
 
         // 2. Verificamos la fecha de expiración.
         if (personaOpt.getUser().getCodigo().getFechaExpiracion().isBefore(LocalDateTime.now())){
-            throw new ElementoNoValido(MensajeError.CODIGO_EXPIRADO);}
+            throw new ElementoNoValido(MensajeError.CODIGO_EXPIRADO);
+        }
 
         // 3. Verificamos si el código coincide.
         if (!personaOpt.getUser().getCodigo().getClave().equals(verificacionCodigoDto.codigo())){

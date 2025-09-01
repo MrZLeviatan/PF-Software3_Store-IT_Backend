@@ -5,6 +5,7 @@ import co.edu.uniquindio.dto.common.auth.ActualizarPasswordDto;
 import co.edu.uniquindio.dto.common.auth.LoginDto;
 import co.edu.uniquindio.dto.common.auth.SolicitudEmailDto;
 import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
+import co.edu.uniquindio.exception.ElementoEliminadoException;
 import co.edu.uniquindio.exception.ElementoIncorrectoException;
 import co.edu.uniquindio.exception.ElementoNoEncontradoException;
 import co.edu.uniquindio.exception.ElementoRepetidoException;
@@ -14,7 +15,7 @@ public interface AuthService {
 
 
     void login(LoginDto loginDto)
-            throws ElementoRepetidoException, ElementoNoEncontradoException, ElementoIncorrectoException;
+            throws ElementoRepetidoException, ElementoNoEncontradoException, ElementoIncorrectoException, ElementoEliminadoException;
 
 
     TokenDto verificacionLogin(VerificacionCodigoDto verificacionLoginDto)
@@ -22,7 +23,7 @@ public interface AuthService {
 
 
     void solicitarRestablecimientoPassword(SolicitudEmailDto solicitudEmailDto)
-            throws ElementoNoEncontradoException, ElementoIncorrectoException;
+            throws ElementoNoEncontradoException, ElementoIncorrectoException, ElementoEliminadoException;
 
 
     void verificarCodigoPassword(VerificacionCodigoDto verificacionCodigoDto)
