@@ -1,14 +1,15 @@
 package co.edu.uniquindio.service.common.impl;
 
 import co.edu.uniquindio.constants.MensajeError;
+import co.edu.uniquindio.dto.TokenDto;
 import co.edu.uniquindio.dto.common.auth.LoginDto;
+import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
 import co.edu.uniquindio.dto.common.email.EmailDto;
 import co.edu.uniquindio.exception.*;
 import co.edu.uniquindio.model.embeddable.Codigo;
 import co.edu.uniquindio.model.entities.users.Cliente;
 import co.edu.uniquindio.model.entities.users.Persona;
 import co.edu.uniquindio.model.enums.EstadoCuenta;
-import co.edu.uniquindio.repository.users.ClienteRepo;
 import co.edu.uniquindio.security.JWTUtils;
 import co.edu.uniquindio.service.common.AuthService;
 import co.edu.uniquindio.service.utils.CodigoService;
@@ -17,6 +18,8 @@ import co.edu.uniquindio.service.utils.PersonaUtilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -28,9 +31,6 @@ public class AuthServiceImpl implements AuthService {
     private final EmailService emailService;
     private final CodigoService codigoService;
     private final PersonaUtilService personaUtilService;
-    private final ClienteRepo clienteRepo;
-
-
 
 
     @Override
@@ -103,7 +103,27 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
+    @Override
+    public TokenDto verificacionLogin(VerificacionCodigoDto verificacionLoginDto)
+            throws ElementoNoEncontradoException, ElementoNoValido {
 
+        String token;
+
+        Persona personaOpt = personaUtilService.buscarPersonaPorEmail(verificacionLoginDto.email());
+
+        // 2. Verificamos la fecha de expiración.
+        if (personaOpt.getUser().getCodigo().getFechaExpiracion().isBefore(LocalDateTime.now())){
+            throw new ElementoNoValido(MensajeError.CODIGO_EXPIRADO);}
+
+        // 3. Verificamos si el código coincide.
+        if (!personaOpt.getUser().getCodigo().getClave().equals(verificacionLoginDto.codigo())){
+            throw new ElementoNoValido(MensajeError.CODIGO_NO_VALIDO);}
+
+        // 4. Generar y retornar el token JWT con los datos del cliente
+            token = jwtUtils.generateToken(personaOpt.getId().toString(),jwtUtils.generarTokenLogin(personaOpt));
+
+        return new TokenDto(token);
+    }
 
 
 }

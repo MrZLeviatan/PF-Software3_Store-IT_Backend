@@ -5,7 +5,7 @@ import co.edu.uniquindio.dto.common.UbicacionDto;
 import co.edu.uniquindio.dto.common.user.CrearUserDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteGoogleDto;
-import co.edu.uniquindio.dto.users.cliente.VerificacionClienteDto;
+import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
 import co.edu.uniquindio.model.enums.TipoCliente;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ public class ClienteVerificacionControllerTest {
 
     private CrearClienteGoogleDto crearClienteGoogleDto;
 
-    private VerificacionClienteDto verificacionClienteDto;
+    private VerificacionCodigoDto verificacionCodigoDto;
 
     @BeforeEach
     void setUp() {
@@ -65,7 +65,7 @@ public class ClienteVerificacionControllerTest {
 
 
 
-        verificacionClienteDto = new VerificacionClienteDto(
+        verificacionCodigoDto = new VerificacionCodigoDto(
                 "nikis281002@gmail.com",
                 "8DFD48"
         );
@@ -89,7 +89,7 @@ public class ClienteVerificacionControllerTest {
         //  Ejecuta la petición REAL al endpoint de verificación
         mockMvc.perform(post("/api/store-it/verificar-registro-clientes")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(verificacionClienteDto)))
+                        .content(objectMapper.writeValueAsString(verificacionCodigoDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.mensaje").value("Cliente verificado con éxito."))
                 .andExpect(jsonPath("$.error").value(false));

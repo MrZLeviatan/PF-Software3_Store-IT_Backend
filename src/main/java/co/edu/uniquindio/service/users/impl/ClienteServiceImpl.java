@@ -4,7 +4,7 @@ import co.edu.uniquindio.constants.MensajeError;
 import co.edu.uniquindio.dto.common.email.EmailDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteGoogleDto;
-import co.edu.uniquindio.dto.users.cliente.VerificacionClienteDto;
+import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
 import co.edu.uniquindio.exception.ElementoNoEncontradoException;
 import co.edu.uniquindio.exception.ElementoNoValido;
 import co.edu.uniquindio.exception.ElementoNulosException;
@@ -14,7 +14,6 @@ import co.edu.uniquindio.model.embeddable.Codigo;
 import co.edu.uniquindio.model.entities.users.Cliente;
 import co.edu.uniquindio.model.enums.EstadoCuenta;
 import co.edu.uniquindio.model.enums.TipoCliente;
-import co.edu.uniquindio.model.enums.TipoCodigo;
 import co.edu.uniquindio.repository.users.ClienteRepo;
 import co.edu.uniquindio.service.users.ClienteService;
 import co.edu.uniquindio.service.utils.CodigoService;
@@ -96,18 +95,18 @@ public class ClienteServiceImpl implements ClienteService {
 
 
     @Override
-    public void verificacionCliente(VerificacionClienteDto verificacionClienteDto)
+    public void verificacionCliente(VerificacionCodigoDto verificacionCodigoDto)
             throws ElementoNoEncontradoException {
 
         // 1. Obtenemos al cliente con el email proporcionado.
-        Cliente cliente = obtenerClientePorEmail(verificacionClienteDto.email());
+        Cliente cliente = obtenerClientePorEmail(verificacionCodigoDto.email());
 
         // 2. Verificamos la fecha de expiración.
         if (cliente.getUser().getCodigo().getFechaExpiracion().isBefore(LocalDateTime.now())) {
             throw new ElementoNoValido(MensajeError.CODIGO_EXPIRADO);}
 
         // 3. Verificamos si el código coincide.
-        if (!cliente.getUser().getCodigo().getClave().equals(verificacionClienteDto.codigo())){
+        if (!cliente.getUser().getCodigo().getClave().equals(verificacionCodigoDto.codigo())){
             throw new ElementoNoValido(MensajeError.CODIGO_NO_VALIDO);}
 
         // 4. Cambiamos el estado de la cuenta del cliente y guardamos en la base de datos.

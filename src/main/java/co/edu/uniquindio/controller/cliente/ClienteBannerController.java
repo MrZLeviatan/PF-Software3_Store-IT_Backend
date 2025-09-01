@@ -3,7 +3,7 @@ package co.edu.uniquindio.controller.cliente;
 import co.edu.uniquindio.dto.MensajeDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteGoogleDto;
-import co.edu.uniquindio.dto.users.cliente.VerificacionClienteDto;
+import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
 import co.edu.uniquindio.exception.ElementoNoEncontradoException;
 import co.edu.uniquindio.exception.ElementoNulosException;
 import co.edu.uniquindio.exception.ElementoRepetidoException;
@@ -49,10 +49,10 @@ public class ClienteBannerController {
 
     @PostMapping("/verificar-registro-clientes")
     public ResponseEntity<MensajeDto<String>> verificarRegistroCliente(
-            @Valid @RequestBody VerificacionClienteDto verificacionClienteDto)
+            @Valid @RequestBody VerificacionCodigoDto verificacionCodigoDto)
             throws ElementoNoEncontradoException {
 
-        clienteService.verificacionCliente(verificacionClienteDto);
+        clienteService.verificacionCliente(verificacionCodigoDto);
         return ResponseEntity.ok(new MensajeDto<>(false ,"Cliente verificado con éxito."));
     }
 

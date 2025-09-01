@@ -1,5 +1,11 @@
 package co.edu.uniquindio.security;
 
+import co.edu.uniquindio.constants.MensajeError;
+import co.edu.uniquindio.exception.ElementoNoEncontradoException;
+import co.edu.uniquindio.model.entities.users.Cliente;
+import co.edu.uniquindio.model.entities.users.Persona;
+import co.edu.uniquindio.model.entities.users.PersonalBodega;
+import co.edu.uniquindio.model.entities.users.RecursosHumanos;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -54,6 +60,35 @@ public class JWTUtils {
                 .claims(claims) // ✅ Añade los claims personalizados como el tipo de usuario
                 .signWith(getKey(), Jwts.SIG.HS256) // Firma el token con HS256
                 .compact();
+    }
+
+
+    public Map<String,String> generarTokenLogin(Persona persona)
+            throws ElementoNoEncontradoException {
+
+        // Mapa que asocia las clases concretas con su respectivo rol en formato ROLE_*
+        Map<Class<?>, String> rolesPorClase = Map.of(
+                Cliente.class, "ROLE_CLIENTE",
+                RecursosHumanos.class, "ROLE_RECURSOS_HUMANOS");
+
+        // Obtener el rol correspondiente a la clase específica del objeto persona
+        String rol;
+
+        if (persona instanceof PersonalBodega){
+            rol = ((PersonalBodega) persona).getRol();
+        }else{
+            rol = rolesPorClase.get(persona.getClass());
+        }
+
+        // Validar que el rol exista; si no, lanzar excepción indicando que no se encontró el rol
+        if (rol == null || rol.isEmpty()) {
+            throw new ElementoNoEncontradoException(MensajeError.PERSONA_NO_ROL);}
+
+        // Retornar un mapa con los datos del token: email, nombre y rol
+        return Map.of(
+                "email", persona.getUser().getEmail(),
+                "nombre", persona.getNombre(),
+                "rol", rol);
     }
 
 

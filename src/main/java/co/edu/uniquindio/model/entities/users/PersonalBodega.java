@@ -28,4 +28,15 @@ public class PersonalBodega extends Persona{
     private TipoPersonalBodega tipoPersonalBodega;
 
 
+
+    public String getRol(){
+        if (this.tipoPersonalBodega == TipoPersonalBodega.AUXILIAR_BODEGA){
+            return "ROLE_AUXILIAR_BODEGA";
+        } else if (this.tipoPersonalBodega == TipoPersonalBodega.ADMINISTRADOR_BODEGA) {
+            return "ROLE_ADMINISTRADOR_BODEGA";
+        }else{
+            return "ROLE_PASANTE_BODEGA";
+        }
+    }
+
 }

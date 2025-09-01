@@ -42,4 +42,7 @@ public class MensajeError {
 
     public static final String CUENTA_ELIMINADA = "La cuenta se encuentra eliminada.";
 
+    public static final String PERSONA_NO_ROL = "Tipo de usuario desconocido";
+
+
 }
