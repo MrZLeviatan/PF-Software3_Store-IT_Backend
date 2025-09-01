@@ -1,9 +1,11 @@
 package co.edu.uniquindio.service.utils;
 
 import co.edu.uniquindio.exception.ElementoEliminadoException;
+import co.edu.uniquindio.exception.ElementoNoEncontradoException;
 import co.edu.uniquindio.exception.ElementoRepetidoException;
+import co.edu.uniquindio.model.entities.users.Persona;
 
-public interface ValidacionCuentasService {
+public interface PersonaUtilService {
 
 
     void validarEmailNoRepetido(String email)
@@ -12,7 +14,9 @@ public interface ValidacionCuentasService {
     void validarTelefonoNoRepetido(String telefono, String telefonoSecundario)
             throws ElementoRepetidoException;
 
+    Persona buscarPersonaPorEmail(String email)
+            throws ElementoNoEncontradoException;
 
-
+    void guardarPersonaBD (Persona persona);
 
 }

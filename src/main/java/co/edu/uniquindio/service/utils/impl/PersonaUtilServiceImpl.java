@@ -3,15 +3,20 @@ package co.edu.uniquindio.service.utils.impl;
 import co.edu.uniquindio.constants.MensajeError;
 import co.edu.uniquindio.dto.common.email.EmailDto;
 import co.edu.uniquindio.exception.ElementoEliminadoException;
+import co.edu.uniquindio.exception.ElementoNoEncontradoException;
 import co.edu.uniquindio.exception.ElementoRepetidoException;
 import co.edu.uniquindio.model.embeddable.Codigo;
 import co.edu.uniquindio.model.entities.users.Cliente;
 import co.edu.uniquindio.model.entities.users.Persona;
+import co.edu.uniquindio.model.entities.users.PersonalBodega;
+import co.edu.uniquindio.model.entities.users.RecursosHumanos;
 import co.edu.uniquindio.model.enums.EstadoCuenta;
 import co.edu.uniquindio.model.enums.TipoCodigo;
 import co.edu.uniquindio.repository.users.ClienteRepo;
+import co.edu.uniquindio.repository.users.PersonalBodegaRepo;
+import co.edu.uniquindio.repository.users.RecursosHumanosRepo;
 import co.edu.uniquindio.service.utils.EmailService;
-import co.edu.uniquindio.service.utils.ValidacionCuentasService;
+import co.edu.uniquindio.service.utils.PersonaUtilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +27,11 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ValidacionCuentaServiceImpl implements ValidacionCuentasService {
+public class PersonaUtilServiceImpl implements PersonaUtilService {
 
     private final ClienteRepo clienteRepo;
+    private final PersonalBodegaRepo personalBodegaRepo;
+    private final RecursosHumanosRepo recursosHumanosRepo;
     private final EmailService emailService;
 
 
@@ -33,8 +40,12 @@ public class ValidacionCuentaServiceImpl implements ValidacionCuentasService {
     public void validarEmailNoRepetido(String email)
             throws ElementoRepetidoException, ElementoEliminadoException {
 
-        //  Se busca el email en el repositorio de clientes
-        Optional<? extends Persona> personaOpt = clienteRepo.findByUser_Email(email);
+        //  Se busca el email en el repositorio de cada entidad
+        Optional<? extends Persona> personaOpt =
+                clienteRepo.findByUser_Email(email)
+                        .map(c -> (Persona) c) // Sí se encuentra el email, se castea el objeto
+                        .or(() -> personalBodegaRepo.findByUser_Email(email))
+                        .or(() -> recursosHumanosRepo.findByUser_Email(email));
 
         if (personaOpt.isPresent()) {
             Persona persona = personaOpt.get();
@@ -70,7 +81,7 @@ public class ValidacionCuentaServiceImpl implements ValidacionCuentasService {
                         verificacion,
                         "Reverificación de Cuenta - Store-It"
                 );
-                emailService.enviarEmailVerificacion(emailDto);
+                emailService.enviarEmailVerificacionRegistro(emailDto);
 
                 throw new ElementoRepetidoException(
                         "La cuenta ya existe pero está inactiva. "
@@ -85,11 +96,37 @@ public class ValidacionCuentaServiceImpl implements ValidacionCuentasService {
     public void validarTelefonoNoRepetido(String telefono, String telefonoSecundario) throws ElementoRepetidoException {
 
         // Buscar si existe en teléfono principal o secundario
-        boolean existe = clienteRepo.existsByTelefonoOrTelefonoSecundario(telefono, telefonoSecundario);
+        boolean existe =
+                clienteRepo.existsByTelefonoOrTelefonoSecundario(telefono, telefonoSecundario) ||
+                        recursosHumanosRepo.existsByTelefonoOrTelefonoSecundario(telefono,telefonoSecundario) ||
+                        personalBodegaRepo.existsByTelefonoOrTelefonoSecundario(telefono, telefonoSecundario);
 
         if (existe) {
             throw new ElementoRepetidoException(MensajeError.TELEFONO_YA_EXISTENTE);
         }}
+
+
+
+    @Override
+    public Persona buscarPersonaPorEmail(String email) throws ElementoNoEncontradoException {
+
+        return
+                clienteRepo.findByUser_Email(email).map(cliente -> (Persona) cliente)
+                .or(() -> personalBodegaRepo.findByUser_Email(email)).map(personalBodega -> (Persona) personalBodega)
+                .or(() -> recursosHumanosRepo.findByUser_Email(email)).map(recursosHumanos -> (Persona) recursosHumanos)
+                .orElseThrow(() -> new ElementoNoEncontradoException(MensajeError.PERSONA_NO_ENCONTRADO));
+    }
+
+
+    @Override
+    public void guardarPersonaBD(Persona persona) {
+        if (persona instanceof Cliente cliente) {
+            clienteRepo.save(cliente);
+        } else if (persona instanceof PersonalBodega personal) {
+            personalBodegaRepo.save(personal);
+        } else if (persona instanceof RecursosHumanos rh) {
+            recursosHumanosRepo.save(rh);}
+    }
 
 
 }

@@ -37,7 +37,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Async
-    public void enviarEmailVerificacion(EmailDto emailDto) {
+    public void enviarEmailVerificacionRegistro(EmailDto emailDto) {
         try {
             // 1. Cargar plantilla HTML
             String htmlTemplate = loadHtmlTemplate("templates/verificacion.html");
@@ -86,6 +86,35 @@ public class EmailServiceImpl implements EmailService {
                     .buildEmail();
 
             // 3. Enviar el correo
+            mailer.sendMail(email);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error al cargar la plantilla del correo", e);
+        }
+    }
+
+    @Override
+    @Async
+    public void enviarEmailVerificacionLogin(EmailDto emailDto) {
+        try {
+            // 1. Cargar plantilla HTML
+            String htmlTemplate = loadHtmlTemplate("templates/verificacion-login.html");
+
+
+            // 2. Reemplazar variables dinámicas
+            String cuerpoPersonalizado = htmlTemplate
+                    .replace("{{codigo}}", emailDto.cuerpo());
+
+
+            // 3. Construir el correo con Simple Java Mail
+            Email email = EmailBuilder.startingBlank()
+                    .from(fromName, fromAddress)
+                    .to(emailDto.destinatario())
+                    .withSubject(emailDto.asunto())
+                    .withHTMLText(cuerpoPersonalizado)
+                    .buildEmail();
+
+            // 5. Enviar el correo
             mailer.sendMail(email);
 
         } catch (IOException e) {

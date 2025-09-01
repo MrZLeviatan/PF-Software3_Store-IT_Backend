@@ -17,9 +17,10 @@ import co.edu.uniquindio.model.enums.TipoCliente;
 import co.edu.uniquindio.model.enums.TipoCodigo;
 import co.edu.uniquindio.repository.users.ClienteRepo;
 import co.edu.uniquindio.service.users.ClienteService;
+import co.edu.uniquindio.service.utils.CodigoService;
 import co.edu.uniquindio.service.utils.EmailService;
 import co.edu.uniquindio.service.utils.PhoneService;
-import co.edu.uniquindio.service.utils.ValidacionCuentasService;
+import co.edu.uniquindio.service.utils.PersonaUtilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,9 +36,10 @@ public class ClienteServiceImpl implements ClienteService {
     private final ClienteRepo clienteRepo;
     private final ClienteMapper clienteMapper;
     private final PasswordEncoder passwordEncoder;
-    private final ValidacionCuentasService validacionCuentasService;
+    private final PersonaUtilService personaUtilService;
     private final PhoneService phoneService;
     private final EmailService emailService;
+    private final CodigoService codigoService;
 
 
 
@@ -55,8 +57,8 @@ public class ClienteServiceImpl implements ClienteService {
                     crearClienteDto.codigoPaisSecundario());}
 
         // 1. Validamos que el email y Teléfono no esté registrado
-        validacionCuentasService.validarEmailNoRepetido(crearClienteDto.user().email());
-        validacionCuentasService.validarTelefonoNoRepetido(telefonoFormateado,telefonoSecundarioFormateado);
+        personaUtilService.validarEmailNoRepetido(crearClienteDto.user().email());
+        personaUtilService.validarTelefonoNoRepetido(telefonoFormateado,telefonoSecundarioFormateado);
 
         // 2. Encriptamos contraseña
         String passwordEncriptada = passwordEncoder.encode(crearClienteDto.user().password());
@@ -77,24 +79,18 @@ public class ClienteServiceImpl implements ClienteService {
         // 5. Asignamos la contraseña encriptada
         cliente.getUser().setPassword(passwordEncriptada);
 
-        // 6. Genera el código de verificación.
-        String verificacion = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-
-        // 7. Asignar el código de verificación al usuario.
-        Codigo codigoVerificacion = new Codigo();
-        codigoVerificacion.setClave(verificacion);
-        codigoVerificacion.setTipoCodigo(TipoCodigo.VERIFICACION_2FA);
-        codigoVerificacion.setFechaExpiracion(LocalDateTime.now().plusMinutes(15));
+        // 6. Asignar el código de verificación al usuario.
+        Codigo codigoVerificacion = codigoService.generarCodigoVerificacionRegistro();
         cliente.getUser().setCodigo(codigoVerificacion);
 
-        // 8. Enviar código de verificación al email del cliente.
+        // 7. Enviar código de verificación al email del cliente.
         EmailDto emailDto = new EmailDto(
-                cliente.getUser().getEmail(),verificacion,
+                cliente.getUser().getEmail(),codigoVerificacion.getClave(),
                 "Bienvenido a Store-It - Gestión de Bodegas");
 
-        emailService.enviarEmailVerificacion(emailDto);
+        emailService.enviarEmailVerificacionRegistro(emailDto);
 
-        // 9. Guardamos en la base de datos.
+        // 8. Guardamos en la base de datos.
         clienteRepo.save(cliente);
     }
 
@@ -134,10 +130,10 @@ public class ClienteServiceImpl implements ClienteService {
                     crearClienteGoogleDto.codigoPaisSecundario());}
 
         // 1. Validamos que el email no esté registrado
-        validacionCuentasService.validarEmailNoRepetido(crearClienteGoogleDto.email());
+        personaUtilService.validarEmailNoRepetido(crearClienteGoogleDto.email());
 
         // 2. Validamos que el teléfono principal no esté registrado
-        validacionCuentasService.validarTelefonoNoRepetido( telefonoFormateado, telefonoSecundarioFormateado);
+        personaUtilService.validarTelefonoNoRepetido( telefonoFormateado, telefonoSecundarioFormateado);
 
         // 3. Convertimos el DTO a entidad usando el mapper de Google
             Cliente cliente = clienteMapper.toEntityGoogle(crearClienteGoogleDto);
@@ -149,7 +145,6 @@ public class ClienteServiceImpl implements ClienteService {
 
         // 4.1 Por obligación se quema una contraseña para el usuario
         cliente.getUser().setPassword(passwordEncoder.encode(UUID.randomUUID().toString().substring(0, 6).toUpperCase()));
-
 
         // 5. Enviar código de verificación al email del cliente.
         EmailDto emailDto = new EmailDto(

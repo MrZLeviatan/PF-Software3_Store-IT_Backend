@@ -27,9 +27,19 @@ public class MensajeError {
 
     public static final String CODIGO_EXPIRADO = "El código proporcionado a expirado.";
 
+
+
+    // -----------> LOGIN <---------------------
+
+    public static final String PASSWORD_INCORRECTO = "La contraseña proporcionada es incorrecta";
+
+
     // -----------> PERSONA <---------------------
+
     public static final String PERSONA_NO_ENCONTRADO = "Persona no encontrada o no registrada.";
 
     public static final String DATOS_FALTANTES_REGISTRO_PERSONA = "Falta de datos para completar el registro";
+
+    public static final String CUENTA_ELIMINADA = "La cuenta se encuentra eliminada.";
 
 }
