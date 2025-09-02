@@ -2,10 +2,7 @@ package co.edu.uniquindio.service.utils.impl;
 
 import co.edu.uniquindio.constants.MensajeError;
 import co.edu.uniquindio.dto.common.email.EmailDto;
-import co.edu.uniquindio.exception.ElementoEliminadoException;
-import co.edu.uniquindio.exception.ElementoNoEncontradoException;
-import co.edu.uniquindio.exception.ElementoNoValido;
-import co.edu.uniquindio.exception.ElementoRepetidoException;
+import co.edu.uniquindio.exception.*;
 import co.edu.uniquindio.model.embeddable.Codigo;
 import co.edu.uniquindio.model.entities.users.Cliente;
 import co.edu.uniquindio.model.entities.users.Persona;
@@ -95,11 +92,11 @@ public class PersonaUtilServiceImpl implements PersonaUtilService {
 
     @Override
     public void validarTelefonoNoRepetido(String telefono, String telefonoSecundario)
-            throws ElementoRepetidoException, ElementoNoValido {
+            throws ElementoRepetidoException, ElementoNulosException {
 
         // Si el teléfono principal es nulo, no se puede validar
         if (telefono == null || telefono.isBlank()) {
-            throw new ElementoNoValido(MensajeError.TELEFONO_VACIO);
+            throw new ElementoNulosException(MensajeError.TELEFONO_VACIO);
         }
 
         boolean existe;
@@ -122,7 +119,6 @@ public class PersonaUtilServiceImpl implements PersonaUtilService {
             throw new ElementoRepetidoException(MensajeError.TELEFONO_YA_EXISTENTE);
         }
     }
-
 
 
 

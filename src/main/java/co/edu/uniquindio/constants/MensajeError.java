@@ -25,9 +25,9 @@ public class MensajeError {
 
     // -----------> CÓDIGO <---------------------
 
-    public static final String CODIGO_NO_VALIDO = "El código proporcionado no coincide.";
+    public static final String CODIGO_NO_VALIDO = "El código proporcionado no coincide";
 
-    public static final String CODIGO_EXPIRADO = "El código proporcionado a expirado.";
+    public static final String CODIGO_EXPIRADO = "El código proporcionado a expirado";
 
 
 
@@ -46,7 +46,7 @@ public class MensajeError {
 
     public static final String PERSONA_NO_ROL = "Tipo de usuario desconocido";
 
-    public static final String CUENTA_ACTIVADA = "La cuenta ya se encuentra verificada";
+    public static final String CUENTA_ACTIVADA = "La cuenta ya fue activada anteriormente";
 
 
 }

@@ -1,7 +1,7 @@
 package co.edu.uniquindio.service.utils.impl;
 
 import co.edu.uniquindio.constants.MensajeError;
-import co.edu.uniquindio.exception.ElementoNoValido;
+import co.edu.uniquindio.exception.ElementoNoValidoException;
 import co.edu.uniquindio.exception.ElementoNulosException;
 import co.edu.uniquindio.service.utils.PhoneService;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -17,7 +17,8 @@ public class PhoneServiceImpl implements PhoneService {
 
 
     @Override
-    public String obtenerTelefonoFormateado(String telefono, String codigoPais) throws ElementoNulosException {
+    public String obtenerTelefonoFormateado(String telefono, String codigoPais)
+            throws ElementoNulosException, ElementoNoValidoException {
 
         // Intentamos obtener el código ISO del país a partir del nombre proporcionado
 
@@ -27,31 +28,31 @@ public class PhoneServiceImpl implements PhoneService {
 
         // Validamos que el número coincida con el formato y reglas del país
         if (!validarTelefono(telefono,codigoPais)) {
-            throw new ElementoNoValido(MensajeError.TELEFONO_INVALIDO);}
+            throw new ElementoNoValidoException(MensajeError.TELEFONO_INVALIDO);}
 
         // Si todo es válido, devolvemos el número formateado
         return formatearTelefono(telefono, codigoPais);
     }
 
 
-    public boolean validarTelefono(String telefono, String codigoPais) {
+    public boolean validarTelefono(String telefono, String codigoPais) throws ElementoNoValidoException {
         try {
             Phonenumber.PhoneNumber numero = phoneNumberUtil.parse(telefono, codigoPais);
             return phoneNumberUtil.isValidNumber(numero); // Devuelve true si el número es válido
         } catch (NumberParseException e) {
             // Lanza una excepción personalizada si el número es inválido
-            throw new ElementoNoValido(MensajeError.TELEFONO_INVALIDO + e.getMessage());
+            throw new ElementoNoValidoException(MensajeError.TELEFONO_INVALIDO + e.getMessage());
         }}
 
 
 
-    public String formatearTelefono(String telefono, String codigoPais) {
+    public String formatearTelefono(String telefono, String codigoPais) throws ElementoNoValidoException {
         try {
             Phonenumber.PhoneNumber numero = phoneNumberUtil.parse(telefono, codigoPais);
             return phoneNumberUtil.format(numero, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
         } catch (NumberParseException e) {
             // Retorna si el número no es válido
-            throw new ElementoNoValido(MensajeError.TELEFONO_INVALIDO + e.getMessage());
+            throw new ElementoNoValidoException(MensajeError.TELEFONO_INVALIDO + e.getMessage());
         }}
 
 

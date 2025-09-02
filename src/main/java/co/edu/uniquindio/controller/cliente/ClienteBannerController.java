@@ -25,7 +25,7 @@ public class ClienteBannerController {
     @PostMapping("/registro-clientes")
     public ResponseEntity<MensajeDto<String>> registrarCliente(
             @Valid @RequestBody CrearClienteDto crearClienteDto)
-            throws ElementoRepetidoException, ElementoNulosException, ElementoEliminadoException {
+            throws ElementoRepetidoException, ElementoNulosException, ElementoEliminadoException, ElementoNoValidoException {
 
         clienteService.registrarCliente(crearClienteDto);
 
@@ -36,7 +36,7 @@ public class ClienteBannerController {
     @PostMapping("/registro-clientes-google")
     public ResponseEntity<MensajeDto<String>> registrarClienteGoogle(
             @Valid @RequestBody CrearClienteGoogleDto crearClienteGoogleDto)
-            throws ElementoRepetidoException, ElementoNulosException, ElementoEliminadoException {
+            throws ElementoRepetidoException, ElementoNulosException, ElementoEliminadoException, ElementoNoValidoException {
 
         clienteService.registroClienteGoogle(crearClienteGoogleDto);
 
@@ -48,7 +48,7 @@ public class ClienteBannerController {
     @PostMapping("/verificar-registro-clientes")
     public ResponseEntity<MensajeDto<String>> verificarRegistroCliente(
             @Valid @RequestBody VerificacionCodigoDto verificacionCodigoDto)
-            throws ElementoNoEncontradoException, ElementoNoValido {
+            throws ElementoNoEncontradoException, ElementoNoCoincideException, ElementoIncorrectoException {
 
         clienteService.verificacionCliente(verificacionCodigoDto);
         return ResponseEntity.ok(new MensajeDto<>(false ,"Cliente verificado con éxito."));

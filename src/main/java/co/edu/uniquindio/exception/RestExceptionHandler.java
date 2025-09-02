@@ -44,8 +44,8 @@ public class RestExceptionHandler {
     }
 
     // Maneja ElementoNoValido (422)
-    @ExceptionHandler(ElementoNoValido.class)
-    public ResponseEntity<MensajeDto<String>> handleElementoNoValido(ElementoNoValido ex) {
+    @ExceptionHandler(ElementoNoValidoException.class)
+    public ResponseEntity<MensajeDto<String>> handleElementoNoValido(ElementoNoValidoException ex) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(new MensajeDto<>(true, ex.getMessage()));
     }

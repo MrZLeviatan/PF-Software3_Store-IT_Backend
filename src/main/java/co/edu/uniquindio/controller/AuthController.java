@@ -6,10 +6,7 @@ import co.edu.uniquindio.dto.common.auth.ActualizarPasswordDto;
 import co.edu.uniquindio.dto.common.auth.LoginDto;
 import co.edu.uniquindio.dto.common.auth.SolicitudEmailDto;
 import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
-import co.edu.uniquindio.exception.ElementoEliminadoException;
-import co.edu.uniquindio.exception.ElementoIncorrectoException;
-import co.edu.uniquindio.exception.ElementoNoEncontradoException;
-import co.edu.uniquindio.exception.ElementoRepetidoException;
+import co.edu.uniquindio.exception.*;
 import co.edu.uniquindio.service.common.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/login")
     private ResponseEntity<MensajeDto<String>> login (@Valid @RequestBody LoginDto loginDto)
-            throws ElementoRepetidoException, ElementoIncorrectoException, ElementoNoEncontradoException, ElementoEliminadoException {
+            throws ElementoNoEncontradoException, ElementoEliminadoException, ElementoNoValidoException, ElementoNoCoincideException {
 
         authService.login(loginDto);
 
@@ -35,9 +32,10 @@ public class AuthController {
         return ResponseEntity.status(200).body(new MensajeDto<>(false,"En espera de verificación login"));
     }
 
+
     @PostMapping("/login-verificación")
     private ResponseEntity<MensajeDto<TokenDto>> verififcarLogin(@Valid @RequestBody VerificacionCodigoDto verificacionCodigoDto)
-            throws ElementoNoEncontradoException {
+            throws ElementoNoEncontradoException, ElementoNoValidoException, ElementoNoCoincideException {
 
         TokenDto tokenDto = authService.verificacionLogin(verificacionCodigoDto);
 
@@ -47,7 +45,7 @@ public class AuthController {
 
     @PostMapping("/restablecer-password")
     public ResponseEntity<MensajeDto<String>> solicitarRestablecimientoPassword(@RequestBody @Valid SolicitudEmailDto dto)
-            throws ElementoNoEncontradoException, ElementoIncorrectoException, ElementoEliminadoException {
+            throws ElementoNoEncontradoException, ElementoEliminadoException, ElementoNoValidoException {
         authService.solicitarRestablecimientoPassword(dto);
         return ResponseEntity.ok().body(new MensajeDto<>(false,"Solicitud de restablecimiento de contraseña enviada"));
     }
@@ -55,7 +53,7 @@ public class AuthController {
 
     @PostMapping("/verificar-codigo-restablecimiento-password")
     public ResponseEntity<MensajeDto<String>> verificarCodigoPassword(@RequestBody @Valid VerificacionCodigoDto dto)
-            throws ElementoIncorrectoException, ElementoNoEncontradoException {
+            throws ElementoNoEncontradoException, ElementoNoValidoException, ElementoNoCoincideException {
 
         authService.verificarCodigoPassword(dto);
         return ResponseEntity.ok().body(new MensajeDto<>(false,"Código verificado exitosamente"));

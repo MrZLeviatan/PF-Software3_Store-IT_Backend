@@ -48,7 +48,7 @@ public class RegistroClienteControllerTest {
 
 
     private CrearClienteDto crearClienteValido() {
-        CrearUserDto userDto = new CrearUserDto("nikis281002@gmail.com", "Password123");
+        CrearUserDto userDto = new CrearUserDto("cliente@test.com", "Password123");
         UbicacionDto ubicacionDto = new UbicacionDto("Colombia", "Medellín", 6.25184, -75.56359);
 
         return new CrearClienteDto(
@@ -75,6 +75,11 @@ public class RegistroClienteControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.mensaje").value("Registro logrado exitosamente."))
                 .andExpect(jsonPath("$.error").value(false));
+    }
+
+    @Test
+    void registrarClienteGoogle_DeberiaRetornar200YMensajeExito() throws Exception {
+        CrearClienteDto dto = crearClienteValido();
     }
 
 
@@ -241,5 +246,6 @@ public class RegistroClienteControllerTest {
                 .andExpect(jsonPath("$.mensaje").exists()) // El mensaje viene del Bean Validation
                 .andExpect(jsonPath("$.error").value(true));
     }
+
 }
 

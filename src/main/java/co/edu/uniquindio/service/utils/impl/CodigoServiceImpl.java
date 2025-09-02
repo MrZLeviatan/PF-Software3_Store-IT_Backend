@@ -2,8 +2,8 @@ package co.edu.uniquindio.service.utils.impl;
 
 import co.edu.uniquindio.constants.MensajeError;
 import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
+import co.edu.uniquindio.exception.ElementoNoCoincideException;
 import co.edu.uniquindio.exception.ElementoNoEncontradoException;
-import co.edu.uniquindio.exception.ElementoNoValido;
 import co.edu.uniquindio.model.embeddable.Codigo;
 import co.edu.uniquindio.model.entities.users.Persona;
 import co.edu.uniquindio.model.enums.TipoCodigo;
@@ -48,18 +48,18 @@ public class CodigoServiceImpl implements CodigoService {
 
     @Override
     public void autentificarCodigo(VerificacionCodigoDto verificacionCodigoDto)
-            throws ElementoNoEncontradoException {
+            throws ElementoNoEncontradoException, ElementoNoCoincideException {
 
         Persona personaOpt = personaUtilService.buscarPersonaPorEmail(verificacionCodigoDto.email());
 
         // 2. Verificamos la fecha de expiración.
         if (personaOpt.getUser().getCodigo().getFechaExpiracion().isBefore(LocalDateTime.now())){
-            throw new ElementoNoValido(MensajeError.CODIGO_EXPIRADO);
+            throw new ElementoNoCoincideException(MensajeError.CODIGO_EXPIRADO);
         }
 
         // 3. Verificamos si el código coincide.
         if (!personaOpt.getUser().getCodigo().getClave().equals(verificacionCodigoDto.codigo())){
-            throw new ElementoNoValido(MensajeError.CODIGO_NO_VALIDO);}
+            throw new ElementoNoCoincideException(MensajeError.CODIGO_NO_VALIDO);}
 
         // Limpiar el código de restablecimiento
         personaOpt.getUser().setCodigo(null);

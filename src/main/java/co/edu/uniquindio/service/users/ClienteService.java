@@ -9,13 +9,15 @@ public interface ClienteService {
 
 
     void registrarCliente(CrearClienteDto crearClienteDto)
-            throws ElementoRepetidoException, ElementoNulosException, ElementoEliminadoException;
+            throws ElementoRepetidoException, ElementoNulosException,
+            ElementoEliminadoException, ElementoNoValidoException;
 
     void verificacionCliente(VerificacionCodigoDto verificacionCodigoDto)
-            throws ElementoNoEncontradoException, ElementoNoValido;
+            throws ElementoNoEncontradoException, ElementoIncorrectoException, ElementoNoCoincideException;
 
 
     void registroClienteGoogle(CrearClienteGoogleDto crearClienteGoogleDto)
-            throws ElementoRepetidoException, ElementoNulosException, ElementoEliminadoException;
+            throws ElementoRepetidoException, ElementoNulosException,
+            ElementoEliminadoException, ElementoNoValidoException;
 
 }

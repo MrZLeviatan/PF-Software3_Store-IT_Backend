@@ -15,16 +15,15 @@ package co.edu.uniquindio.exception;
  *     <li>Cuando una condición de negocio no se cumple.</li>
  * </ul>
  *
- * @author MrZ.Leviatan
  */
-public class ElementoNoValido extends RuntimeException {
+public class ElementoNoValidoException extends Exception {
 
     /**
      * Crea una nueva instancia de la excepción con un mensaje personalizado.
      *
      * @param message mensaje que describe el motivo de la excepción.
      */
-    public ElementoNoValido(String message) {
+    public ElementoNoValidoException(String message) {
         super(message);
     }
 
@@ -34,6 +33,6 @@ public class ElementoNoValido extends RuntimeException {
      * @param message mensaje que describe el motivo de la excepción.
      * @param cause causa original que provocó esta excepción.
      */
-    public ElementoNoValido(String message, Throwable cause) {super(message,cause);}
+    public ElementoNoValidoException(String message, Throwable cause) {super(message,cause);}
 
 }

@@ -36,7 +36,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void login(LoginDto loginDto)
-            throws ElementoNoEncontradoException, ElementoRepetidoException, ElementoIncorrectoException, ElementoEliminadoException {
+            throws ElementoNoEncontradoException,
+            ElementoEliminadoException, ElementoNoValidoException, ElementoNoCoincideException {
 
         Persona personaOpt = personaUtilService.buscarPersonaPorEmail(loginDto.email());
 
@@ -58,20 +59,21 @@ public class AuthServiceImpl implements AuthService {
 
 
     public boolean autentificarPassword(Persona persona, String password)
-            throws ElementoRepetidoException, ElementoIncorrectoException, ElementoEliminadoException {
+            throws  ElementoEliminadoException, ElementoNoValidoException, ElementoNoCoincideException {
 
         // 1. Verificar a la persona y su estado.
         validarEstadoPersona(persona);
 
         // 2. Verificamos si las credenciales coinciden.
         if (!passwordEncoder.matches(password, persona.getUser().getPassword())) {
-            throw new ElementoIncorrectoException(MensajeError.PASSWORD_INCORRECTO);}
+            throw new ElementoNoCoincideException(MensajeError.PASSWORD_INCORRECTO);}
 
         return true;
     }
 
 
-    private void validarEstadoPersona(Persona persona) throws ElementoIncorrectoException, ElementoEliminadoException {
+    private void validarEstadoPersona(Persona persona) throws
+            ElementoEliminadoException, ElementoNoValidoException {
 
         // 1. Verificar si la cuenta no ha sido activada
         if (persona.getUser().getEstadoCuenta().equals(EstadoCuenta.INACTIVA)){
@@ -92,7 +94,7 @@ public class AuthServiceImpl implements AuthService {
             );
             emailService.enviarEmailVerificacionRegistro(emailDto);
 
-            throw new ElementoNoValido(
+            throw new ElementoNoValidoException(
                     "La cuenta ya existe pero está inactiva. "
                             + "Hemos enviado un nuevo código de verificación a tu correo."
             );
@@ -103,7 +105,7 @@ public class AuthServiceImpl implements AuthService {
 
             // Solo si es un Cliente, lanzar excepción especial para reactivar
             if (persona instanceof Cliente){
-                throw new ElementoNoValido(MensajeError.CUENTA_ELIMINADA);}
+                throw new ElementoNoValidoException(MensajeError.CUENTA_ELIMINADA);}
 
             // Para otros usuarios (Agente, Personal, RRHH) simplemente cuenta eliminada
             throw new ElementoEliminadoException(MensajeError.CUENTA_ELIMINADA);
@@ -113,7 +115,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenDto verificacionLogin(VerificacionCodigoDto verificacionLoginDto)
-            throws ElementoNoEncontradoException, ElementoNoValido {
+            throws ElementoNoEncontradoException, ElementoNoCoincideException {
 
         String token;
 
@@ -130,7 +132,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void solicitarRestablecimientoPassword(SolicitudEmailDto solicitudEmailDto)
-            throws ElementoIncorrectoException, ElementoNoEncontradoException, ElementoEliminadoException {
+            throws  ElementoNoEncontradoException, ElementoEliminadoException, ElementoNoValidoException {
 
         Persona personaOpt = personaUtilService.buscarPersonaPorEmail(solicitudEmailDto.email());
 
@@ -151,11 +153,14 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+
     @Override
     public void verificarCodigoPassword(VerificacionCodigoDto verificacionCodigoDto)
-            throws ElementoNoEncontradoException {
+            throws ElementoNoEncontradoException, ElementoNoCoincideException {
+
         codigoService.autentificarCodigo(verificacionCodigoDto);
     }
+
 
     @Override
     public void actualizarPassword(ActualizarPasswordDto actualizarPasswordDto)

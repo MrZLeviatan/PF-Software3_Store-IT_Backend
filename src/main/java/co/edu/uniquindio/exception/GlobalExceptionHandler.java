@@ -8,9 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -24,11 +22,34 @@ public class GlobalExceptionHandler {
                 .body(new MensajeDto<>(true, e.getMessage()));
     }
 
-    // ⚠️ Elemento repetido (400 - Bad Request)
+    // ⚠️ Elemento Nulo (400 - Bad Request)
     @ExceptionHandler(ElementoNulosException.class)
-    public ResponseEntity<MensajeDto<String>> manejarElementoRepetido(ElementoNulosException e) {
+    public ResponseEntity<MensajeDto<String>> manejarElementoNulo(ElementoNulosException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(new MensajeDto<>(true, e.getMessage()));
+    }
+
+    // ⚠️ Errores de validación de campos (@Valid) (400 - Bad Request)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<MensajeDto<List<String>>> manejarValidaciones(MethodArgumentNotValidException e) {
+        List<String> errores = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .collect(Collectors.toList());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new MensajeDto<>(true, errores));
+    }
+
+
+    // ⚠️ Elemento no coinciden (401- Unauthorized)
+    @ExceptionHandler(ElementoNoCoincideException.class)
+    public ResponseEntity<MensajeDto<String>> manejarElementoNoValido(ElementoNoCoincideException e) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(new MensajeDto<>(true, e.getMessage()));
     }
 
@@ -50,22 +71,22 @@ public class GlobalExceptionHandler {
     }
 
 
-
-    // ⚠️ Errores de validación de campos (@Valid) (400 - Bad Request)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<MensajeDto<List<String>>> manejarValidaciones(MethodArgumentNotValidException e) {
-        List<String> errores = e.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .collect(Collectors.toList());
-
+    // ⚠️ Elemento no válido (418 - Soy una tetera)
+    @ExceptionHandler(ElementoNoValidoException.class)
+    public ResponseEntity<MensajeDto<String>> manejarElementoNoValido(ElementoNoValidoException e) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new MensajeDto<>(true, errores));
+                .status(HttpStatus.I_AM_A_TEAPOT)
+                .body(new MensajeDto<>(true, e.getMessage()));
     }
 
 
+    // ⚠️ Elemento incorrectos en el contexto (422 - UNPROCESSABLE_ENTITY.)
+    @ExceptionHandler(ElementoIncorrectoException.class)
+    public ResponseEntity<MensajeDto<String>> manejarElementoNoEncontrado(ElementoIncorrectoException e) {
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(new MensajeDto<>(true, e.getMessage()));
+    }
 
 
 
