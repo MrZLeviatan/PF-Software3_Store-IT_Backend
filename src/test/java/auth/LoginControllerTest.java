@@ -2,9 +2,12 @@ package auth;
 
 import co.edu.uniquindio.Main;
 import co.edu.uniquindio.dto.common.auth.LoginDto;
+import co.edu.uniquindio.model.embeddable.Codigo;
+import co.edu.uniquindio.model.enums.TipoCodigo;
 import co.edu.uniquindio.repository.users.ClienteRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +21,7 @@ import co.edu.uniquindio.model.enums.TipoCliente;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -40,24 +44,38 @@ public class LoginControllerTest {
     @Autowired
     private  PasswordEncoder passwordEncoder;
 
+    private Cliente clienteBase;
+
+
+    @BeforeEach
+    void setUp() {
+
+        // Crear un cliente reutilizable para todos los tests
+        clienteBase = new Cliente();
+        clienteBase.setNombre("Juan");
+        clienteBase.setTelefono("9999999999");
+        clienteBase.setTipoCliente(TipoCliente.NATURAL);
+
+        User user = new User();
+        user.setEmail("cliente@test.com");
+        user.setPassword(passwordEncoder.encode("Password123"));
+        user.setEstadoCuenta(EstadoCuenta.ACTIVO);
+        clienteBase.setUser(user);
+
+        Codigo codigo = new Codigo();
+        codigo.setTipoCodigo(TipoCodigo.VERIFICACION_2FA);
+        codigo.setClave("55B83C");
+        codigo.setFechaExpiracion(LocalDateTime.now().plusMinutes(15));
+        clienteBase.getUser().setCodigo(codigo);
+
+        clienteRepo.save(clienteBase);
+    }
+
 
     @Test
     void login_Exitoso_DeberiaRetornar200() throws Exception {
-        // Creamos un cliente válido en BD
-        Cliente cliente = new Cliente();
-        cliente.setNombre("Carlos López");
-        cliente.setTelefono("3023456789");
-        cliente.setTipoCliente(TipoCliente.NATURAL);
 
-        User user = new User();
-        user.setEmail("login_test" + UUID.randomUUID() + "@test.com");
-        user.setPassword(passwordEncoder.encode("Password123"));
-        user.setEstadoCuenta(EstadoCuenta.ACTIVO);
-
-        cliente.setUser(user);
-        clienteRepo.save(cliente);
-
-        LoginDto loginDto = new LoginDto(user.getEmail(), "Password123");
+        LoginDto loginDto = new LoginDto(clienteBase.getUser().getEmail(), "Password123");
 
 
         mockMvc.perform(post("/api/auth/login")
@@ -72,21 +90,7 @@ public class LoginControllerTest {
     @Test
     void login_UsuarioPasswordNoCoincide_DeberiaRetornar401() throws Exception {
 
-        // Creamos un cliente válido en BD
-        Cliente cliente = new Cliente();
-        cliente.setNombre("Carlos López");
-        cliente.setTelefono("3023456789");
-        cliente.setTipoCliente(TipoCliente.NATURAL);
-
-        User user = new User();
-        user.setEmail("login_test" + UUID.randomUUID() + "@test.com");
-        user.setPassword(passwordEncoder.encode("Password123"));
-        user.setEstadoCuenta(EstadoCuenta.ACTIVO);
-
-        cliente.setUser(user);
-        clienteRepo.save(cliente);
-
-        LoginDto loginDto = new LoginDto(user.getEmail(), "Password133");
+        LoginDto loginDto = new LoginDto(clienteBase.getUser().getEmail(), "Password133");
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginDto)))

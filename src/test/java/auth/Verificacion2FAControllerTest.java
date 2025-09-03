@@ -42,6 +42,9 @@ public class Verificacion2FAControllerTest {
 
     private VerificacionCodigoDto verificacionCodigoDto;
 
+    private Cliente clienteBase;
+
+
     @BeforeEach
     void setUp() {
         // Caso válido (email + código correctos)
@@ -49,30 +52,31 @@ public class Verificacion2FAControllerTest {
                 "cliente@test.com",   // debes asegurarte que exista en la BD en estado INACTIVA
                 "55B83C"
         );
-    }
 
-
-    @Test
-    void verificarLogin_Exitoso_DeberiaRetornar200() throws  Exception {
-
-        Cliente cliente = new Cliente();
-        cliente.setNombre("Juan");
-        cliente.setTelefono("9999999999");
-        cliente.setTipoCliente(TipoCliente.NATURAL);
+        // Crear un cliente reutilizable para todos los tests
+        clienteBase = new Cliente();
+        clienteBase.setNombre("Juan");
+        clienteBase.setTelefono("9999999999");
+        clienteBase.setTipoCliente(TipoCliente.NATURAL);
 
         User user = new User();
         user.setEmail("cliente@test.com");
         user.setPassword("Password123");
         user.setEstadoCuenta(EstadoCuenta.ACTIVO);
-        cliente.setUser(user);
+        clienteBase.setUser(user);
 
         Codigo codigo = new Codigo();
         codigo.setTipoCodigo(TipoCodigo.VERIFICACION_2FA);
         codigo.setClave("55B83C");
         codigo.setFechaExpiracion(LocalDateTime.now().plusMinutes(15));
-        cliente.getUser().setCodigo(codigo);
-        clienteRepo.save(cliente);
+        clienteBase.getUser().setCodigo(codigo);
 
+        clienteRepo.save(clienteBase);
+    }
+
+
+    @Test
+    void verificarLogin_Exitoso_DeberiaRetornar200() throws  Exception {
 
         mockMvc.perform(post("/api/auth/login-verificación")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -100,24 +104,8 @@ public class Verificacion2FAControllerTest {
     @Test
     void verificarLogin_CodigoIncorrecto_DeberiaRetornar401() throws  Exception {
 
-        Cliente cliente = new Cliente();
-        cliente.setNombre("Juan");
-        cliente.setTelefono("9999999999");
-        cliente.setTipoCliente(TipoCliente.NATURAL);
-
-        User user = new User();
-        user.setEmail("cliente@test.com");
-        user.setPassword("Password123");
-        user.setEstadoCuenta(EstadoCuenta.ACTIVO);
-        cliente.setUser(user);
-
-        Codigo codigo = new Codigo();
-        codigo.setTipoCodigo(TipoCodigo.VERIFICACION_2FA);
-        codigo.setClave("55BAB");
-        codigo.setFechaExpiracion(LocalDateTime.now().plusMinutes(15));
-        cliente.getUser().setCodigo(codigo);
-        clienteRepo.save(cliente);
-
+        clienteBase.getUser().getCodigo().setClave("345678");
+        clienteRepo.save(clienteBase);
 
         mockMvc.perform(post("/api/auth/login-verificación")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -132,23 +120,8 @@ public class Verificacion2FAControllerTest {
     @Test
     void verificarLogin_CodigoExpirado_DeberiaRetornar410() throws  Exception {
 
-        Cliente cliente = new Cliente();
-        cliente.setNombre("Juan");
-        cliente.setTelefono("9999999999");
-        cliente.setTipoCliente(TipoCliente.NATURAL);
-
-        User user = new User();
-        user.setEmail("cliente@test.com");
-        user.setPassword("Password123");
-        user.setEstadoCuenta(EstadoCuenta.ACTIVO);
-        cliente.setUser(user);
-
-        Codigo codigo = new Codigo();
-        codigo.setTipoCodigo(TipoCodigo.VERIFICACION_2FA);
-        codigo.setClave("55B83C");
-        codigo.setFechaExpiracion(LocalDateTime.now().minusMinutes(15));
-        cliente.getUser().setCodigo(codigo);
-        clienteRepo.save(cliente);
+        clienteBase.getUser().getCodigo().setFechaExpiracion(LocalDateTime.now().minusMinutes(15));
+        clienteRepo.save(clienteBase);
 
         mockMvc.perform(post("/api/auth/login-verificación")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -158,7 +131,5 @@ public class Verificacion2FAControllerTest {
                 .andExpect(jsonPath("$.mensaje").value("El código proporcionado a expirado")); // ejemplo
 
     }
-
-
 
 }

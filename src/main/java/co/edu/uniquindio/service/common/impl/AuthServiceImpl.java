@@ -150,7 +150,6 @@ public class AuthServiceImpl implements AuthService {
         emailService.enviarEmailCodigo(emailDto,"codigoRestablecerPassword.html");
 
         personaUtilService.guardarPersonaBD(personaOpt);
-
     }
 
 
