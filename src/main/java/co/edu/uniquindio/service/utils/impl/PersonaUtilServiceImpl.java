@@ -92,7 +92,7 @@ public class PersonaUtilServiceImpl implements PersonaUtilService {
 
     @Override
     public void validarTelefonoNoRepetido(String telefono, String telefonoSecundario)
-            throws ElementoRepetidoException, ElementoNulosException {
+            throws ElementoRepetidoException, ElementoNulosException, ElementoNoValidoException {
 
         // Si el teléfono principal es nulo, no se puede validar
         if (telefono == null || telefono.isBlank()) {
@@ -115,9 +115,24 @@ public class PersonaUtilServiceImpl implements PersonaUtilService {
                             personalBodegaRepo.existsByTelefonoOrTelefonoSecundario(telefono, telefonoSecundario);
         }
 
+
         if (existe) {
-            throw new ElementoRepetidoException(MensajeError.TELEFONO_YA_EXISTENTE);
+            Persona personaOpt = buscarPersonaPorTelefono(telefono);
+
+            if (!personaOpt.getUser().getEstadoCuenta().equals(EstadoCuenta.ELIMINADO)) {
+                throw new ElementoRepetidoException(MensajeError.TELEFONO_YA_EXISTENTE);
+            }
         }
+    }
+
+
+    private Persona buscarPersonaPorTelefono(String telefono) throws ElementoNoValidoException {
+
+        return clienteRepo.findByTelefono(telefono)
+                .map(cliente -> (Persona) cliente)
+                .or(() -> personalBodegaRepo.findByTelefono(telefono).map(personal -> (Persona) personal))
+                .or(() -> recursosHumanosRepo.findByTelefono(telefono).map(rh -> (Persona) rh))
+                .orElseThrow(() -> new ElementoNoValidoException(MensajeError.PERSONA_NO_ENCONTRADO));
     }
 
 

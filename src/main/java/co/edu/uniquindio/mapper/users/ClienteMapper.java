@@ -20,6 +20,7 @@ public interface ClienteMapper {
 
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "nit", ignore = true)
     @Mapping(target = "ubicacion", source = "ubicacion")
     @Mapping(target = "tipoCliente", constant = "NATURAL")
     @Mapping(target = "user.email", source = "email")

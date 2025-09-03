@@ -166,6 +166,9 @@ public class ClienteServiceImpl implements ClienteService {
         // 4.1 Por obligación se quema una contraseña para el usuario
         cliente.getUser().setPassword(passwordEncoder.encode(UUID.randomUUID().toString().substring(0, 6).toUpperCase()));
 
+        // 4.2 Se establece el estado de la cuenta como activo por registrarse mediante Google.
+        cliente.getUser().setEstadoCuenta(EstadoCuenta.ACTIVO);
+
         // 5. Enviar código de verificación al email del cliente.
         EmailDto emailDto = new EmailDto(
                 cliente.getUser().getEmail(),null,

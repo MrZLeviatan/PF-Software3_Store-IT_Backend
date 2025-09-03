@@ -1,10 +1,7 @@
 package co.edu.uniquindio.service.common;
 
 import co.edu.uniquindio.dto.TokenDto;
-import co.edu.uniquindio.dto.common.auth.ActualizarPasswordDto;
-import co.edu.uniquindio.dto.common.auth.LoginDto;
-import co.edu.uniquindio.dto.common.auth.SolicitudEmailDto;
-import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
+import co.edu.uniquindio.dto.common.auth.*;
 import co.edu.uniquindio.exception.*;
 
 public interface AuthService {
@@ -14,6 +11,9 @@ public interface AuthService {
     void login(LoginDto loginDto)
             throws  ElementoNoEncontradoException, ElementoNoCoincideException,
             ElementoEliminadoException, ElementoNoValidoException;
+
+    void loginGoogle(LoginGoogleDto loginGoogleDto)
+            throws ElementoNoValidoException, ElementoNoEncontradoException, ElementoEliminadoException;
 
 
     TokenDto verificacionLogin(VerificacionCodigoDto verificacionLoginDto)

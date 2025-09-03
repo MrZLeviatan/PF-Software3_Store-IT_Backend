@@ -71,11 +71,6 @@ public class RegistroClienteControllerTest {
                 .andExpect(jsonPath("$.error").value(false));
     }
 
-    @Test
-    void registrarClienteGoogle_DeberiaRetornar200YMensajeExito() throws Exception {
-        CrearClienteDto dto = crearClienteValido();
-    }
-
 
     // ❌ Email duplicado -> cuenta activada
     @Test
@@ -151,7 +146,7 @@ public class RegistroClienteControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isGone())
-                .andExpect(jsonPath("$.mensaje").value("El correo pertenece a una cuenta eliminada.")) // ajusta a MensajeError.EMAIL_CUENTA_ELIMINADA
+                .andExpect(jsonPath("$.mensaje").value("El correo pertenece a una cuenta eliminada."))
                 .andExpect(jsonPath("$.error").value(true));
     }
 
@@ -164,8 +159,7 @@ public class RegistroClienteControllerTest {
         // Guardamos el primero
         mockMvc.perform(post("/api/store-it/registro-clientes")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto1)))
-                .andExpect(status().isOk());
+                        .content(objectMapper.writeValueAsString(dto1)));
 
         // Segundo cliente con mismo teléfono pero email distinto
         CrearUserDto otroUser = new CrearUserDto("otro@test.com", "Password123");

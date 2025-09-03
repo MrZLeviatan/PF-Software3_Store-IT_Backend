@@ -2,10 +2,7 @@ package co.edu.uniquindio.service.common.impl;
 
 import co.edu.uniquindio.constants.MensajeError;
 import co.edu.uniquindio.dto.TokenDto;
-import co.edu.uniquindio.dto.common.auth.ActualizarPasswordDto;
-import co.edu.uniquindio.dto.common.auth.LoginDto;
-import co.edu.uniquindio.dto.common.auth.SolicitudEmailDto;
-import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
+import co.edu.uniquindio.dto.common.auth.*;
 import co.edu.uniquindio.dto.common.email.EmailDto;
 import co.edu.uniquindio.exception.*;
 import co.edu.uniquindio.model.embeddable.Codigo;
@@ -16,8 +13,11 @@ import co.edu.uniquindio.security.JWTUtils;
 import co.edu.uniquindio.service.common.AuthService;
 import co.edu.uniquindio.service.utils.CodigoService;
 import co.edu.uniquindio.service.utils.EmailService;
+import co.edu.uniquindio.service.utils.GoogleUtilsService;
 import co.edu.uniquindio.service.utils.PersonaUtilService;
 import lombok.RequiredArgsConstructor;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final EmailService emailService;
     private final CodigoService codigoService;
     private final PersonaUtilService personaUtilService;
+    private final GoogleUtilsService googleUtilsService;
 
 
     @Override
@@ -55,6 +56,42 @@ public class AuthServiceImpl implements AuthService {
             personaUtilService.guardarPersonaBD(personaOpt);
 
         }
+    }
+
+
+    @Override
+    public void loginGoogle(LoginGoogleDto loginGoogleDto) throws ElementoNoValidoException,
+            ElementoNoEncontradoException, ElementoEliminadoException {
+
+        // 1. Validar token de Google usando la librería oficial
+        GoogleIdToken.Payload payload = googleUtilsService.verifyIdToken(loginGoogleDto.idToken());
+        if (payload == null) {
+            throw new ElementoNoValidoException(MensajeError.TOKEN_GOOGLE_NO_VALIDO);
+        }
+
+        String email = payload.getEmail();
+
+        // 2. Buscar persona en nuestra BD
+        Persona personaOpt = personaUtilService.buscarPersonaPorEmail(email);
+
+        // 3. Validar estado de la cuenta
+        validarEstadoPersona(personaOpt);
+
+        // 4. Generar código de verificación 2FA
+        Codigo codigoVerificacion = codigoService.generarCodigoVerificacion2AF();
+        personaOpt.getUser().setCodigo(codigoVerificacion);
+
+        // 5. Enviar código al correo
+        EmailDto emailDto = new EmailDto(
+                personaOpt.getUser().getEmail(),
+                codigoVerificacion.getClave(),
+                "Código de inicio de Sesión (Google) - Store IT!: " + codigoVerificacion.getClave()
+        );
+        emailService.enviarEmailCodigo(emailDto, "verificacion-login.html");
+
+        // 6. Guardar usuario con el código
+        personaUtilService.guardarPersonaBD(personaOpt);
+
     }
 
 

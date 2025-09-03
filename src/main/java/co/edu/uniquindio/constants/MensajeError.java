@@ -36,6 +36,10 @@ public class MensajeError {
     public static final String PASSWORD_INCORRECTO = "La contraseña proporcionada es incorrecta";
 
 
+    // -----------> Google <---------------------
+
+    public static final String TOKEN_GOOGLE_NO_VALIDO = "El token de Google no es válido";
+
     // -----------> PERSONA <---------------------
 
     public static final String PERSONA_NO_ENCONTRADO = "Persona no encontrada o no registrada";

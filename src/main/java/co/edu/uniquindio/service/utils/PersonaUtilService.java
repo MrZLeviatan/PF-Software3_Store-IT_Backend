@@ -10,7 +10,7 @@ public interface PersonaUtilService {
             throws ElementoRepetidoException, ElementoEliminadoException;
 
     void validarTelefonoNoRepetido(String telefono, String telefonoSecundario)
-            throws ElementoRepetidoException, ElementoNulosException;
+            throws ElementoRepetidoException, ElementoNulosException, ElementoNoValidoException;
 
     Persona buscarPersonaPorEmail(String email)
             throws ElementoNoEncontradoException;

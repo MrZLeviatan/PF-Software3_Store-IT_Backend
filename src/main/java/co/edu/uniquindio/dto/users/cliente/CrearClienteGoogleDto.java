@@ -1,7 +1,6 @@
 package co.edu.uniquindio.dto.users.cliente;
 
 import co.edu.uniquindio.dto.common.UbicacionDto;
-import co.edu.uniquindio.model.enums.TipoCliente;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
