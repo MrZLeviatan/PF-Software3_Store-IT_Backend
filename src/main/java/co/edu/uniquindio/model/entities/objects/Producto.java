@@ -27,9 +27,17 @@ public class Producto {
     @Comment("ID único del producto")
     private Long id;
 
+    @Column(name = "codigo_producto")
+    @Comment("Código del producto único de negocio")
+    private String codigoProducto; // Identificador único de negocio
+
     @Column(name = "nombre", nullable = false)
     @Comment("Nombre del producto")
     private String nombre;
+
+    @Column(name = "cantidad", nullable = false)
+    @Comment("Cantidad en bodega del producto")
+    private Integer cantidad;
 
     @Column(name = "imagen_producto_url")
     @Comment("URL de la imagen del producto (Almacenada en Cloudinary).")

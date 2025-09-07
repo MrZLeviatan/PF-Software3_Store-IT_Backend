@@ -41,6 +41,14 @@ public class MovimientosProducto {
     @Comment("Fecha y hora en que se autiriza el movimiento.")
     private LocalDateTime fechaAutorizacion;
 
+    @Column(name = "autorizado", nullable = false)
+    @Comment("Indica si el movimiento fue autorizado o no.")
+    private boolean autorizado = false; // false por defecto
+
+    @Column(name = "descripción_autorización")
+    @Comment("Observaciones adicionales de la autorización")
+    private String descripcionAutorizado;
+
     @ManyToOne
     @JoinColumn(name = "producto_id")
     @Comment("Producto al que corresponde este movimiento.")
