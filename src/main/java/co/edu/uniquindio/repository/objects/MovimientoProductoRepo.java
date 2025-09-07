@@ -27,6 +27,5 @@ public interface MovimientoProductoRepo extends JpaRepository<MovimientosProduct
     List<MovimientosProducto> findByProductoAndFechaMovimientoBetween(Producto producto, LocalDateTime inicio, LocalDateTime fin);
 
 
-
 }
 

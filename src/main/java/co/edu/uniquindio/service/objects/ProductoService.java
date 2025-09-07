@@ -6,13 +6,13 @@ import co.edu.uniquindio.model.entities.objects.Producto;
 import co.edu.uniquindio.model.enums.EstadoProducto;
 import co.edu.uniquindio.model.enums.TipoProducto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ProductoService {
 
 
-    ProductoDto verDetalleProducto(String codigoProducto);
+    ProductoDto verDetalleProducto(String codigoProducto) throws ElementoNoEncontradoException;
+
 
     Producto obtenerProducto(String codigoProducto) throws ElementoNoEncontradoException;
 

@@ -24,12 +24,14 @@ import java.util.stream.Collectors;
 public class ProductoServiceImpl implements ProductoService {
 
 
-    private ProductoRepo productoRepo;
-    private ProductoMapper productoMapper;
+    private final ProductoRepo productoRepo;
+    private final ProductoMapper productoMapper;
 
     @Override
-    public ProductoDto verDetalleProducto(String codigoProducto) {
-        return null;
+    public ProductoDto verDetalleProducto(String codigoProducto)
+            throws ElementoNoEncontradoException {
+
+        return productoMapper.toDto(obtenerProducto(codigoProducto));
     }
 
     @Override
@@ -39,12 +41,14 @@ public class ProductoServiceImpl implements ProductoService {
                         new ElementoNoEncontradoException(MensajeError.PRODUCTO_NO_EXISTE));
     }
 
+
     @Override
     public Producto obtenerProductoAutorizado(String codigoProducto) throws ElementoNoEncontradoException {
         return productoRepo.findByCodigoProductoAndIsAutorizadoTrue(codigoProducto)
                 .orElseThrow(() ->
                         new ElementoNoEncontradoException(MensajeError.PRODUCTO_NO_EXISTE));
     }
+
 
     @Override
     public List<ProductoDto> listarProductos(String codigoProducto, TipoProducto tipoProducto,

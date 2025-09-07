@@ -1,7 +1,11 @@
 package co.edu.uniquindio.service.objects;
 
+import co.edu.uniquindio.model.entities.users.PersonalBodega;
+
 public interface NotificacionService {
 
-    public void notificarMovimientoProducto(String mensaje);
+    void notificarMovimientoProducto(String mensaje);
+
+    void notificarCambioMovimiento(PersonalBodega persona, String mensaje);
 
 }

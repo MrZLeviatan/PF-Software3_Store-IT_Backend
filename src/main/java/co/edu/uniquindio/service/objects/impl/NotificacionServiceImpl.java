@@ -16,8 +16,8 @@ import java.util.List;
 public class NotificacionServiceImpl implements NotificacionService {
 
 
-    private NotificacionRepo notificacionRepo;
-    private PersonalBodegaRepo personalBodegaRepo;
+    private final NotificacionRepo notificacionRepo;
+    private final PersonalBodegaRepo personalBodegaRepo;
 
     @Override
     public void notificarMovimientoProducto(String mensaje) {
@@ -31,6 +31,15 @@ public class NotificacionServiceImpl implements NotificacionService {
             n.setDestinatario(p);
             notificacionRepo.save(n);
         }
+    }
+
+
+    @Override
+    public void notificarCambioMovimiento(PersonalBodega persona, String mensaje) {
+        Notificacion n = new Notificacion();
+        n.setMensaje(mensaje);
+        n.setDestinatario(persona);
+        notificacionRepo.save(n);
     }
 
 }

@@ -25,6 +25,7 @@ import co.edu.uniquindio.service.objects.NotificacionService;
 import co.edu.uniquindio.service.objects.ProductoService;
 import co.edu.uniquindio.service.users.AuxiliarBodegaService;
 import co.edu.uniquindio.service.utils.CloudinaryService;
+import co.edu.uniquindio.service.utils.PersonaUtilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,7 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
     private final MovimientoService movimientoService;
     private final ProductoService productoService;
     private final NotificacionService notificacionService;
+    private final PersonaUtilService personaUtilService;
 
 
     @Override
@@ -71,7 +73,7 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
         Bodega bodega = bodegaRepo.findById(Long.parseLong(registroNuevoProductoDto.idBodega()));
 
         // 3, Buscamos al personal de bodega encargado del registro
-        PersonalBodega personalBodega = obtenerPersonalBodegaPorEmail(registroNuevoProductoDto.emailPersonalBodega());
+        PersonalBodega personalBodega = personaUtilService.obtenerPersonalBodetaEmail(registroNuevoProductoDto.emailPersonalBodega());
 
         //  4, Creamos el producto y le asignamos las variables faltantes
         Producto producto = productoMapper.toEntityNew(registroNuevoProductoDto);
@@ -104,7 +106,7 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
         Producto producto = productoService.obtenerProductoAutorizado(registrarProductoExistenteDto.codigoProducto());
 
         // 4. Obtener personal encargado del registro
-        PersonalBodega personalBodega = obtenerPersonalBodegaPorEmail(registrarProductoExistenteDto.emaiPersonalBodega());
+        PersonalBodega personalBodega = personaUtilService.obtenerPersonalBodetaEmail(registrarProductoExistenteDto.emaiPersonalBodega());
 
         // 5. Generamos movimiento del producto
         MovimientosProducto movimientosProducto =
@@ -135,7 +137,7 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
         producto.setCantidad(producto.getCantidad() - retiroProductoDto.cantidad());
 
         //3. Encontramos personal encargado
-        PersonalBodega personalBodega = obtenerPersonalBodegaPorEmail(retiroProductoDto.emailPersonalResponsable());
+        PersonalBodega personalBodega = personaUtilService.obtenerPersonalBodetaEmail(retiroProductoDto.emailPersonalResponsable());
 
         // 5. Generamos movimiento del producto
         MovimientosProducto movimientosProducto =
@@ -152,16 +154,16 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
                 + producto.getCodigoProducto());
     }
 
-
-    private PersonalBodega obtenerPersonalBodegaPorEmail(String email) throws ElementoNoEncontradoException {
-        return personaRepo.findByUser_Email(email)
-                .orElseThrow(() ->
-                        new ElementoNoEncontradoException(MensajeError.PERSONA_NO_ENCONTRADO));
+    @Override
+    public ProductoDto verDetalleProducto(String codigoProducto) throws ElementoNoEncontradoException {
+        return productoService.verDetalleProducto(codigoProducto);
     }
 
 
     @Override
-    public List<ProductoDto> listarProductos(String codigoProducto, TipoProducto tipoProducto, EstadoProducto estadoProducto, String idBodega, int pagina, int size) {
+    public List<ProductoDto> listarProductos(String codigoProducto, TipoProducto tipoProducto,
+                                             EstadoProducto estadoProducto, String idBodega, int pagina, int size) {
+
         return productoService.listarProductos(codigoProducto, tipoProducto, estadoProducto, idBodega, pagina, size);
     }
 }

@@ -2,7 +2,6 @@ package co.edu.uniquindio.service.utils.impl;
 
 import co.edu.uniquindio.constants.MensajeError;
 import co.edu.uniquindio.exception.CargaFallidaException;
-import co.edu.uniquindio.exception.ElementoIncorrectoException;
 import co.edu.uniquindio.service.utils.CloudinaryService;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;

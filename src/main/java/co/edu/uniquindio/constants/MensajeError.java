@@ -61,11 +61,24 @@ public class MensajeError {
 
     public static final String PRODUCTO_INSUFICIENTE = "La cantidad deseada a retirar supera a la cantidad en stock";
 
+    public static final String PRODUCTO_NO_COINCIDEN = "El producto No coincide con el solicitado";
+
+
+    // -----------> OTROS <---------------------
+
+
     public static final String ERROR_ELIMINAR_IMAGEN = "Error al eliminar la imagen";
 
     public static final String IMAGEN_PRODUCTO_VACIA = "No subio la imagen del producto";
 
     public static final String BODEGA_NULO = "No selecciono la bodega";
+
+
+    // -----------> MOVIMIENTO <---------------------
+
+    public static final String MOVIMIENTO_NO_EXISTE = "El movimiento No se encuentra registrado";
+
+    public static final String TIPO_DE_MOVIMIENTO_NO_EXISTE = "Tipo de movimiento no valido";
 
 
 }

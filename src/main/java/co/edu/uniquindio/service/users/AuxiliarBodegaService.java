@@ -25,6 +25,9 @@ public interface AuxiliarBodegaService {
     void RetiroProducto(RetiroProductoDto retiroProductoDto)
             throws ElementoNoEncontradoException, ElementoNoValidoException;
 
+    ProductoDto verDetalleProducto(String codigoProducto)
+            throws ElementoNoEncontradoException;
+
     List<ProductoDto> listarProductos(String codigoProducto, TipoProducto tipoProducto,
                                       EstadoProducto estadoProducto, String idBodega, int pagina, int size);
 

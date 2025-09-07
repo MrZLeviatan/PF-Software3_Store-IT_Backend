@@ -1,6 +1,7 @@
 package co.edu.uniquindio.model.entities.objects;
 
 import co.edu.uniquindio.model.entities.users.PersonalBodega;
+import co.edu.uniquindio.model.enums.EstadoMovimiento;
 import co.edu.uniquindio.model.enums.TipoMovimiento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,9 +42,14 @@ public class MovimientosProducto {
     @Comment("Fecha y hora en que se autoriza el movimiento.")
     private LocalDateTime fechaAutorizacion;
 
-    @Column(name = "autorizado", nullable = false)
-    @Comment("Indica si el movimiento fue autorizado o no.")
-    private boolean autorizado = false; // false por defecto
+    @Column(name = "esta_verificado", nullable = false)
+    @Comment("Indica si el movimiento esta en revision o no.")
+    private boolean isVerificado = false; // false por defecto
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_movimiento")
+    @Comment("Estado del movimiento: Denegado, Verificado")
+    private EstadoMovimiento estadoMovimiento;
 
     @Column(name = "descripción_autorización")
     @Comment("Observaciones adicionales de la autorización")
