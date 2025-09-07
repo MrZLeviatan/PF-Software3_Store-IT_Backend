@@ -16,6 +16,5 @@ public record ProductoDto(
         TipoProducto tipoProducto,
         EstadoProducto estadoProducto,
         String idBodega
-
 ) {
 }
