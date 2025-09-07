@@ -4,6 +4,7 @@ import co.edu.uniquindio.constants.MensajeError;
 import co.edu.uniquindio.dto.TokenDto;
 import co.edu.uniquindio.dto.common.auth.*;
 import co.edu.uniquindio.dto.common.email.EmailDto;
+import co.edu.uniquindio.dto.common.google.GoogleUserResponse;
 import co.edu.uniquindio.exception.*;
 import co.edu.uniquindio.model.embeddable.Codigo;
 import co.edu.uniquindio.model.entities.users.Cliente;
@@ -60,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public void loginGoogle(LoginGoogleDto loginGoogleDto) throws ElementoNoValidoException,
+    public GoogleUserResponse loginGoogle(LoginGoogleDto loginGoogleDto) throws ElementoNoValidoException,
             ElementoNoEncontradoException, ElementoEliminadoException {
 
         // 1. Validar token de Google usando la librería oficial
@@ -70,6 +71,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String email = payload.getEmail();
+        String name = (String) payload.get("name");
+        String picture = (String) payload.get("picture");
 
         // 2. Buscar persona en nuestra BD
         Persona personaOpt = personaUtilService.buscarPersonaPorEmail(email);
@@ -91,6 +94,8 @@ public class AuthServiceImpl implements AuthService {
 
         // 6. Guardar usuario con el código
         personaUtilService.guardarPersonaBD(personaOpt);
+
+        return new GoogleUserResponse(email, name, picture);
 
     }
 

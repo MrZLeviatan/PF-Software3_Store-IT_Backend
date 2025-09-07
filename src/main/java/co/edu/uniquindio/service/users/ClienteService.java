@@ -1,5 +1,6 @@
 package co.edu.uniquindio.service.users;
 
+import co.edu.uniquindio.dto.common.google.GoogleUserResponse;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteGoogleDto;
 import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
@@ -14,6 +15,9 @@ public interface ClienteService {
 
     void verificacionCliente(VerificacionCodigoDto verificacionCodigoDto)
             throws ElementoNoEncontradoException, ElementoIncorrectoException, ElementoNoCoincideException;
+
+
+    GoogleUserResponse validarToken(String token) throws ElementoIncorrectoException;
 
 
     void registroClienteGoogle(CrearClienteGoogleDto crearClienteGoogleDto)

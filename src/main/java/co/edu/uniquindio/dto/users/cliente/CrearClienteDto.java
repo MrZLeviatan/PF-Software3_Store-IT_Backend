@@ -30,7 +30,7 @@ public record CrearClienteDto(
 
         // Tipo de cliente.
         @NotNull TipoCliente tipoCliente,
-        
+
         String nit
 
 ) {

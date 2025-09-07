@@ -2,6 +2,7 @@ package co.edu.uniquindio.service.users.impl;
 
 import co.edu.uniquindio.constants.MensajeError;
 import co.edu.uniquindio.dto.common.email.EmailDto;
+import co.edu.uniquindio.dto.common.google.GoogleUserResponse;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteGoogleDto;
 import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
@@ -13,10 +14,10 @@ import co.edu.uniquindio.model.enums.EstadoCuenta;
 import co.edu.uniquindio.model.enums.TipoCliente;
 import co.edu.uniquindio.repository.users.ClienteRepo;
 import co.edu.uniquindio.service.users.ClienteService;
-import co.edu.uniquindio.service.utils.CodigoService;
-import co.edu.uniquindio.service.utils.EmailService;
-import co.edu.uniquindio.service.utils.PhoneService;
-import co.edu.uniquindio.service.utils.PersonaUtilService;
+import co.edu.uniquindio.service.utils.*;
+import co.edu.uniquindio.service.utils.impl.GoogleUtilsServiceImpl;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class ClienteServiceImpl implements ClienteService {
     private final PhoneService phoneService;
     private final EmailService emailService;
     private final CodigoService codigoService;
+    private final GoogleUtilsService googleUtilsService;
 
 
 
@@ -137,6 +139,24 @@ public class ClienteServiceImpl implements ClienteService {
 
 
     @Override
+    public GoogleUserResponse validarToken(String token) throws ElementoIncorrectoException {
+
+        GoogleIdToken.Payload payload = googleUtilsService.verifyIdToken(token);
+
+        if (payload == null){
+            throw new ElementoIncorrectoException("Token inválido o expirado");
+        }
+
+        // Extraer datos del payload
+        String email = payload.getEmail();
+        String name = (String) payload.get("name");
+        String picture = (String) payload.get("picture");
+
+        return new GoogleUserResponse(email, name, picture);
+    }
+
+
+    @Override
     public void registroClienteGoogle(CrearClienteGoogleDto crearClienteGoogleDto)
             throws ElementoRepetidoException, ElementoNulosException, ElementoEliminadoException, ElementoNoValidoException {
 
@@ -156,18 +176,18 @@ public class ClienteServiceImpl implements ClienteService {
         personaUtilService.validarTelefonoNoRepetido( telefonoFormateado, telefonoSecundarioFormateado);
 
         // 3. Convertimos el DTO a entidad usando el mapper de Google
-            Cliente cliente = clienteMapper.toEntityGoogle(crearClienteGoogleDto);
+        Cliente cliente = clienteMapper.toEntityGoogle(crearClienteGoogleDto);
 
         // 4. Seteamos los teléfonos ya formateados
         cliente.setTelefono(telefonoFormateado);
         if (telefonoSecundarioFormateado != null) {
             cliente.setTelefonoSecundario(telefonoSecundarioFormateado);}
 
-        // 4.1 Por obligación se quema una contraseña para el usuario
-        cliente.getUser().setPassword(passwordEncoder.encode(UUID.randomUUID().toString().substring(0, 6).toUpperCase()));
 
-        // 4.2 Se establece el estado de la cuenta como activo por registrarse mediante Google.
-        cliente.getUser().setEstadoCuenta(EstadoCuenta.ACTIVO);
+        //  Encriptamos contraseña
+        String passwordEncriptada = passwordEncoder.encode(crearClienteGoogleDto.password());
+
+        cliente.getUser().setPassword(passwordEncriptada);
 
         // 5. Enviar código de verificación al email del cliente.
         EmailDto emailDto = new EmailDto(

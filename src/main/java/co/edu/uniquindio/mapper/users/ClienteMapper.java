@@ -24,7 +24,7 @@ public interface ClienteMapper {
     @Mapping(target = "ubicacion", source = "ubicacion")
     @Mapping(target = "tipoCliente", constant = "NATURAL")
     @Mapping(target = "user.email", source = "email")
-    @Mapping(target = "user.password", ignore = true)
+    @Mapping(target = "user.password", source = "password")
     @Mapping(target = "user.estadoCuenta", constant = "ACTIVO") // Para Google, activa de inmediato
     @Mapping(target = "user.codigo", ignore = true) // No usamos código para Google
     @Mapping(target = "user.registroGoogle", constant = "true") // Marcamos como Google

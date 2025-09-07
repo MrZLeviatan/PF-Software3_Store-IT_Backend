@@ -1,6 +1,8 @@
 package co.edu.uniquindio.controller.cliente;
 
 import co.edu.uniquindio.dto.MensajeDto;
+import co.edu.uniquindio.dto.common.google.GoogleTokenRequest;
+import co.edu.uniquindio.dto.common.google.GoogleUserResponse;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteDto;
 import co.edu.uniquindio.dto.users.cliente.CrearClienteGoogleDto;
 import co.edu.uniquindio.dto.common.auth.VerificacionCodigoDto;
@@ -33,6 +35,16 @@ public class ClienteBannerController {
     }
 
 
+    @PostMapping("/validate-google")
+    public ResponseEntity<MensajeDto<GoogleUserResponse>> validarGoogle(@RequestBody GoogleTokenRequest googleTokenRequest)
+            throws ElementoIncorrectoException {
+
+        GoogleUserResponse googleUserResponse = clienteService.validarToken(googleTokenRequest.idToken());
+
+        return ResponseEntity.status(200).body(new MensajeDto<>(false,googleUserResponse));
+    }
+
+
     @PostMapping("/registro-clientes-google")
     public ResponseEntity<MensajeDto<String>> registrarClienteGoogle(
             @Valid @RequestBody CrearClienteGoogleDto crearClienteGoogleDto)
@@ -42,7 +54,6 @@ public class ClienteBannerController {
 
         return ResponseEntity.ok().body(new MensajeDto<>(false,"Registro logrado exitosamente."));
     }
-
 
 
     @PostMapping("/verificar-registro-clientes")

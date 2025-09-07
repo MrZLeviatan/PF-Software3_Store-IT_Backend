@@ -22,6 +22,8 @@ public record CrearClienteGoogleDto(
 
         @NotBlank @Email String email,
 
+        @NotBlank String password,
+
         @NotNull UbicacionDto ubicacion
 ) {
 }

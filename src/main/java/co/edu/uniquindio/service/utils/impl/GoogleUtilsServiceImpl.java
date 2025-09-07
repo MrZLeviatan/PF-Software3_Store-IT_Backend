@@ -6,6 +6,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,15 +24,15 @@ public class GoogleUtilsServiceImpl implements GoogleUtilsService {
     private String CLIENT_ID;
 
 
-    private final GoogleIdTokenVerifier verifier;
+    private GoogleIdTokenVerifier verifier;
 
 
-    public GoogleUtilsServiceImpl() {
+    @PostConstruct
+    private void init() {
         this.verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
                 .setAudience(Collections.singletonList(CLIENT_ID))
                 .build();
     }
-
 
     /**
      * Verifica la validez de un ID Token de Google

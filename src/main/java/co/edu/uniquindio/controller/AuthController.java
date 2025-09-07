@@ -3,6 +3,7 @@ package co.edu.uniquindio.controller;
 import co.edu.uniquindio.dto.MensajeDto;
 import co.edu.uniquindio.dto.TokenDto;
 import co.edu.uniquindio.dto.common.auth.*;
+import co.edu.uniquindio.dto.common.google.GoogleUserResponse;
 import co.edu.uniquindio.exception.*;
 import co.edu.uniquindio.service.common.AuthService;
 import jakarta.validation.Valid;
@@ -31,13 +32,13 @@ public class AuthController {
 
 
     @PostMapping("/login-google")
-    private ResponseEntity<MensajeDto<String>> loginGoogle (@Valid @RequestBody LoginGoogleDto loginGoogleDto)
+    private ResponseEntity<MensajeDto<GoogleUserResponse>> loginGoogle (@Valid @RequestBody LoginGoogleDto loginGoogleDto)
             throws ElementoNoEncontradoException, ElementoEliminadoException, ElementoNoValidoException {
 
-        authService.loginGoogle(loginGoogleDto);
+        GoogleUserResponse googleUserResponse = authService.loginGoogle(loginGoogleDto);
 
         // Retorna una respuesta HTTP 200 con el token dentro de un objeto de tipo MensajeDto
-        return ResponseEntity.status(200).body(new MensajeDto<>(false,"En espera de verificación login"));
+        return ResponseEntity.status(200).body(new MensajeDto<>(false,googleUserResponse));
     }
 
 

@@ -2,6 +2,7 @@ package co.edu.uniquindio.service.common;
 
 import co.edu.uniquindio.dto.TokenDto;
 import co.edu.uniquindio.dto.common.auth.*;
+import co.edu.uniquindio.dto.common.google.GoogleUserResponse;
 import co.edu.uniquindio.exception.*;
 
 public interface AuthService {
@@ -12,7 +13,7 @@ public interface AuthService {
             throws  ElementoNoEncontradoException, ElementoNoCoincideException,
             ElementoEliminadoException, ElementoNoValidoException;
 
-    void loginGoogle(LoginGoogleDto loginGoogleDto)
+    GoogleUserResponse loginGoogle(LoginGoogleDto loginGoogleDto)
             throws ElementoNoValidoException, ElementoNoEncontradoException, ElementoEliminadoException;
 
 
