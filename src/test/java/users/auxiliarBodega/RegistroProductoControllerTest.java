@@ -204,5 +204,4 @@ public class RegistroProductoControllerTest {
                 .andExpect(jsonPath("$.error").value(true))
                 .andExpect(jsonPath("$.mensaje").exists());
     }
-
 }

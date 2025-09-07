@@ -268,6 +268,22 @@ class GestorBodegaControllerTest {
                 any(), any(), any(), any(), any(), any(), anyInt(), anyInt()
         );
     }
+
+    @Test
+    void testVerDetalleProducto_ProductoNoEncontrado() throws ElementoNoEncontradoException {
+        // Arrange: simulamos que el servicio lanza la excepción
+        String codigoProducto = "codigoInvalido";
+        when(gestorBodegasService.verDetalleProducto(codigoProducto))
+                .thenThrow(new ElementoNoEncontradoException("Producto no encontrado"));
+
+        // Act & Assert: verificamos que la excepción se propaga
+        assertThrows(ElementoNoEncontradoException.class, () -> {
+            gestorBodegaController.verDetalleProducto(codigoProducto);
+        });
+
+        // Verificamos que se llamó al servicio con el código esperado
+        verify(gestorBodegasService, times(1)).verDetalleProducto(codigoProducto);
+    }
 }
 
 
