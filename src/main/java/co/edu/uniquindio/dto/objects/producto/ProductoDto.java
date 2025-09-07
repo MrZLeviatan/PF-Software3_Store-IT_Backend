@@ -14,7 +14,6 @@ public record ProductoDto(
         String imagen,
         String descripcion,
         TipoProducto tipoProducto,
-        LocalDateTime fechaVencimiento,
         EstadoProducto estadoProducto,
         String idBodega
 

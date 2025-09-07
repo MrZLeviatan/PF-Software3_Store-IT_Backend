@@ -49,17 +49,17 @@ public class Producto {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_producto", nullable = false)
-    @Comment("Tipo de producto: FRÁGIL, PERECEDERO. ESTANDAR")
+    @Comment("Tipo de producto: FRÁGIL, ESTÁNDAR")
     private TipoProducto tipoProducto;
-
-    @Column(name = "fecha_vencimiento", nullable = true)
-    @Comment("Fecha de vencimiento del producto ( Si aplica )")
-    private LocalDateTime fechaVencimiento;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado_producto", nullable = false)
     @Comment("Estado del producto: en bodega, trasladado o retirado")
     private EstadoProducto estadoProducto;
+
+    @Column(name = "autorizado", nullable = false)
+    @Comment("Indica si el producto fue autorizado o no en su primer ingreso.")
+    private boolean isAutorizado = false;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "bodega_id", nullable = false)

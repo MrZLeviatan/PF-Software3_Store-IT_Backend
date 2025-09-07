@@ -4,7 +4,6 @@ public enum TipoProducto {
 
 
     FRAGIL,
-    PERECEDERO,
     ESTANDAR
 
 }

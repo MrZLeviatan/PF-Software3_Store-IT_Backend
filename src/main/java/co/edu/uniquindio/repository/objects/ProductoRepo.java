@@ -1,7 +1,6 @@
 package co.edu.uniquindio.repository.objects;
 
 import co.edu.uniquindio.model.entities.objects.Producto;
-import co.edu.uniquindio.model.enums.TipoProducto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -13,9 +12,7 @@ public interface ProductoRepo extends JpaRepository<Producto, Long>, JpaSpecific
 
     Optional<Producto> findByCodigoProducto(String codigoProducto);
 
-    Optional<Producto> findByNombreAndTipoProducto(String nombre, TipoProducto tipoProducto);
+    Optional<Producto> findByCodigoProductoAndIsAutorizadoTrue(String codigoProducto);
 
-
-
-
+    boolean existsByCodigoProducto(String codigoProducto);
 }

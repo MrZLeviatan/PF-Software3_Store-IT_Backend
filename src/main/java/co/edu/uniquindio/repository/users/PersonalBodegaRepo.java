@@ -25,4 +25,6 @@ public interface PersonalBodegaRepo extends JpaRepository<PersonalBodega, Long>,
 
     boolean existsByTelefono(String telefono);
 
+    List<PersonalBodega> findByTipoPersonalBodegaIn(List<TipoPersonalBodega> tipos);
+
 }

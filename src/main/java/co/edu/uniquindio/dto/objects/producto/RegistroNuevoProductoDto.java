@@ -1,12 +1,10 @@
 package co.edu.uniquindio.dto.objects.producto;
 
-import co.edu.uniquindio.model.enums.TipoMovimiento;
 import co.edu.uniquindio.model.enums.TipoProducto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 
 public record RegistroNuevoProductoDto(
 
@@ -16,7 +14,6 @@ public record RegistroNuevoProductoDto(
         MultipartFile imagenProducto,
         @NotBlank String descripcion,
         @NotNull TipoProducto tipoProducto,
-        LocalDateTime fechaVencimiento,
         String idBodega,
 
         // Parte del movimiento Producto

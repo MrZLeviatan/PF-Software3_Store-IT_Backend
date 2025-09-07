@@ -4,6 +4,7 @@ public enum EstadoProducto {
 
     EN_BODEGA,
     RETIRADO,
-    EN_TRASLADO
+    EN_TRASLADO,
+    ELIMINADO
 
 }

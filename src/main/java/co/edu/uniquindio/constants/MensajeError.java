@@ -53,4 +53,19 @@ public class MensajeError {
     public static final String CUENTA_ACTIVADA = "La cuenta ya fue activada anteriormente";
 
 
+    // -----------> PRODUCTO <---------------------
+
+    public static final String PRODUCTO_EXISTE = "El producto ya se encuentra registrado";
+
+    public static final String PRODUCTO_NO_EXISTE = "El producto NO se encuentra registrado";
+
+    public static final String PRODUCTO_INSUFICIENTE = "La cantidad deseada a retirar supera a la cantidad en stock";
+
+    public static final String ERROR_ELIMINAR_IMAGEN = "Error al eliminar la imagen";
+
+    public static final String IMAGEN_PRODUCTO_VACIA = "No subio la imagen del producto";
+
+    public static final String BODEGA_NULO = "No selecciono la bodega";
+
+
 }

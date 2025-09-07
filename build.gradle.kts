@@ -94,6 +94,8 @@ dependencies {
     // JSON encoder + appenders for Logback -> Logstash/ELK
     implementation("net.logstash.logback:logstash-logback-encoder:7.4") // encoder JSON para logback -> ELK
 
+    // 🔹 Cloudinary: Librería para el guardado de imágenes en la web
+    implementation("com.cloudinary:cloudinary-http44:1.32.2")
 
     // ==== Testing ====
     // Starter de pruebas de Spring Boot (JUnit 5, Mockito, etc.).

@@ -38,7 +38,7 @@ public class MovimientosProducto {
     private LocalDateTime fechaMovimiento;
 
     @Column(name = "fecha_autorización")
-    @Comment("Fecha y hora en que se autiriza el movimiento.")
+    @Comment("Fecha y hora en que se autoriza el movimiento.")
     private LocalDateTime fechaAutorizacion;
 
     @Column(name = "autorizado", nullable = false)
@@ -53,6 +53,11 @@ public class MovimientosProducto {
     @JoinColumn(name = "producto_id")
     @Comment("Producto al que corresponde este movimiento.")
     private Producto producto;
+
+    @Column(name = "cantidad_producto", nullable = true)
+    @Comment("Cantidad a retirar o agregar del producto")
+    private Integer cantidad;
+
 
     @ManyToOne
     @JoinColumn(name = "personal_encargado_id", nullable = false)
