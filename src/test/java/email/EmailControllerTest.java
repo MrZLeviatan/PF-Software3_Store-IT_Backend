@@ -62,6 +62,7 @@ public class EmailControllerTest {
                 null,
                 null,
                 "nicolas.cabreras@uqvirtual.edu.co",
+                "Password123",
                 ubicacionDto
         );
 

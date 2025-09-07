@@ -10,7 +10,7 @@ public record RegistroNuevoProductoDto(
 
         @NotBlank String codigoProducto,
         @NotBlank String nombre,
-        @NotBlank Integer cantidad,
+        @NotNull Integer cantidad,
         MultipartFile imagenProducto,
         @NotBlank String descripcion,
         @NotNull TipoProducto tipoProducto,
