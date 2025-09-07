@@ -4,6 +4,6 @@ public enum TipoPersonalBodega {
 
     ADMINISTRADOR_BODEGA,
     AUXILIAR_BODEGA,
-    PASANTE_BODEGA
+    GESTOR_BODEGA
 
 }
