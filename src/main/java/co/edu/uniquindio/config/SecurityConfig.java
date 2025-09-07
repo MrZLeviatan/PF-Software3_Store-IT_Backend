@@ -49,6 +49,8 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // Docs públicas
                         .requestMatchers("/api/auth/**").permitAll() // Login/registro públicos
                         .requestMatchers("/api/store-it/**").permitAll() // Público store-it
+                        .requestMatchers("/api/gestor-bodega/**").hasAnyAuthority("ROLE_GESTOR_BODEGA")
+                        .requestMatchers("/api/auxiliar-bodega/^**").hasAnyAuthority("ROLE_AUXILIAR_BODEGA")
                         .anyRequest().authenticated() // Resto requiere login
                 )
                 // Manejo de errores de autenticación

@@ -2,6 +2,7 @@ package co.edu.uniquindio.model.entities.users;
 
 
 import co.edu.uniquindio.model.embeddable.DatosLaborales;
+import co.edu.uniquindio.model.entities.objects.MovimientosProducto;
 import co.edu.uniquindio.model.enums.TipoPersonalBodega;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,6 +31,10 @@ public class PersonalBodega extends Persona{
     private TipoPersonalBodega tipoPersonalBodega;
 
 
+    @OneToMany(mappedBy = "personalResponsable", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @Comment("Lista de movimientos en los que el personal ha estado involucrado como responsable.")
+    private List<MovimientosProducto> movimientosProducto;
+
 
     public String getRol(){
         if (this.tipoPersonalBodega == TipoPersonalBodega.AUXILIAR_BODEGA){
@@ -35,7 +42,7 @@ public class PersonalBodega extends Persona{
         } else if (this.tipoPersonalBodega == TipoPersonalBodega.ADMINISTRADOR_BODEGA) {
             return "ROLE_ADMINISTRADOR_BODEGA";
         }else{
-            return "ROLE_PASANTE_BODEGA";
+            return "ROLE_GESTOR_BODEGA";
         }
     }
 

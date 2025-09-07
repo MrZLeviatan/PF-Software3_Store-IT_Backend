@@ -159,4 +159,12 @@ public class PersonaUtilServiceImpl implements PersonaUtilService {
     }
 
 
+    @Override
+    public PersonalBodega obtenerPersonalBodetaEmail(String email) throws ElementoNoEncontradoException {
+        return personalBodegaRepo.findByUser_Email(email)
+                .orElseThrow(() ->
+                        new ElementoNoEncontradoException(MensajeError.PERSONA_NO_ENCONTRADO));
+    }
+
+
 }

@@ -54,6 +54,7 @@ public class RegistroGoogleControllerTest {
                 null,
                 null,
                 "googleuser@test.com",
+                "Password123",
                 ubicacionDto
         );
     }
@@ -141,6 +142,7 @@ public class RegistroGoogleControllerTest {
                 null,
                 null,
                 "googleuser23@test.com",
+                "Password123",
                 ubicacionDto
         );
 
