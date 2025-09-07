@@ -37,6 +37,10 @@ public class MovimientosProducto {
     @Comment("Fecha y hora en que se realizó el movimiento")
     private LocalDateTime fechaMovimiento;
 
+    @Column(name = "fecha_autorización")
+    @Comment("Fecha y hora en que se autiriza el movimiento.")
+    private LocalDateTime fechaAutorizacion;
+
     @ManyToOne
     @JoinColumn(name = "producto_id")
     @Comment("Producto al que corresponde este movimiento.")
@@ -48,7 +52,7 @@ public class MovimientosProducto {
     private PersonalBodega personalResponsable;
 
     @ManyToOne
-    @JoinColumn(name = "personal_autorización_id", nullable = false)
+    @JoinColumn(name = "personal_autorización_id")
     @Comment("Personal de bodega responsable de la autorización del movimiento del producto.")
     private PersonalBodega personalAutorizacion;
 

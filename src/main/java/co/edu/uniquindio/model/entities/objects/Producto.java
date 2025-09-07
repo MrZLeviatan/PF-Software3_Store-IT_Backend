@@ -33,7 +33,7 @@ public class Producto {
 
     @Column(name = "imagen_producto_url")
     @Comment("URL de la imagen del producto (Almacenada en Cloudinary).")
-    private String imagen;  
+    private String imagen;
 
     @Column(name = "descripcion")
     @Comment("Descripción detallada del producto")

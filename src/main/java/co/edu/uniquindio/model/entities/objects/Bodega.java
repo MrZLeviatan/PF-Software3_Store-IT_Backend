@@ -36,7 +36,7 @@ public class Bodega {
     @Comment("Número telefónico principal de la bodega.")
     private String telefono;
 
-    @OneToMany(mappedBy = "producto", cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "bodega", cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @Comment("Productos que se encuentran en esta bodega.")
     private List<Producto> productos;
 
