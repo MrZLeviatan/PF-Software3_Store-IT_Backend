@@ -5,8 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+/**
+  Este es un manejador de excepciones global que centraliza el control de errores en la aplicación.
+  Captura diversas excepciones y retorna respuestas de error estandarizadas,
+  lo que garantiza un manejo consistente de los problemas en las API REST.
+ */
 public class RestExceptionHandler {
-
 
     // Maneja ElementoNoEncontradoException (404)
     @ExceptionHandler(ElementoNoEncontradoException.class)

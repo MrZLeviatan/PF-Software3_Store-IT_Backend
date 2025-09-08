@@ -31,11 +31,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 @Service
 @RequiredArgsConstructor
 public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
-
 
     private final ProductoMapper productoMapper;
     private final ProductoRepo productoRepo;
@@ -47,7 +45,11 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
     private final NotificacionService notificacionService;
     private final PersonaUtilService personaUtilService;
 
-
+    /** Registra un nuevo producto en el sistema.
+    //   Valida si ya existe, sube la imagen al servicio en la nube,
+    //   asocia la bodega y el personal de registro, crea el producto
+    //  y registra su primer movimiento.
+     */
     @Override
     public void RegistroNuevoProducto(RegistroNuevoProductoDto registroNuevoProductoDto)
             throws ElementoRepetidoException, ElementoNulosException, ElementoNoEncontradoException {
@@ -57,31 +59,30 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
             throw new ElementoRepetidoException(MensajeError.PRODUCTO_EXISTE);
         }
 
-        // 2. Subimos imagen de perfil o asignamos una por defecto
+        // 2. Subimos imagen de perfil o lanzamos excepción si no se envía
         String urlImagen;
         if (registroNuevoProductoDto.imagenProducto() != null && !registroNuevoProductoDto.imagenProducto().isEmpty()) {
             urlImagen = cloudinaryService.uploadImage(registroNuevoProductoDto.imagenProducto());
-        }else{
+        } else {
             throw new ElementoNulosException(MensajeError.IMAGEN_PRODUCTO_VACIA);
         }
 
-        // 2. Verificamos que la bodega exista
+        // 3. Verificamos que la bodega exista
         if (!bodegaRepo.existsById(Long.valueOf(registroNuevoProductoDto.idBodega()))){
             throw new ElementoNulosException(MensajeError.BODEGA_NULO);
         }
 
         Bodega bodega = bodegaRepo.findById(Long.parseLong(registroNuevoProductoDto.idBodega()));
 
-        // 3, Buscamos al personal de bodega encargado del registro
+        // 4. Buscamos al personal de bodega encargado
         PersonalBodega personalBodega = personaUtilService.obtenerPersonalBodetaEmail(registroNuevoProductoDto.emailPersonalBodega());
 
-        //  4, Creamos el producto y le asignamos las variables faltantes
+        // 5. Creamos el producto y asignamos sus datos
         Producto producto = productoMapper.toEntityNew(registroNuevoProductoDto);
-
         producto.setImagen(urlImagen);
         producto.setBodega(bodega);
 
-        // 5. Registramos un movimiento del producto
+        // 6. Registramos el primer movimiento del producto
         MovimientosProducto movimientosProducto =
                 movimientoService.registrarMovimientoProducto(
                         registroNuevoProductoDto.descripcion(), personalBodega, TipoMovimiento.PRIMER_INGRESO, producto,
@@ -89,81 +90,90 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
 
         producto.getHistorialMovimientos().add(movimientosProducto);
 
-        // 8, Guardamos en la base
+        // 7. Guardamos en la base
         productoRepo.save(producto);
 
-        // 9. Notificacion a las otras partes
+        // 8. Enviamos notificación del nuevo producto
         notificacionService.notificarMovimientoProducto("Se ha creado un ingreso de un nuevo producto "
                 + producto.getCodigoProducto());
-
     }
 
-
+    /** Agrega cantidad a un producto existente.
+    //   Verifica que el producto esté autorizado, registra el movimiento
+    //   y guarda los cambios en espera de autorización.
+     */
     @Override
-    public void AgregarCantidadProducto(RegistrarProductoExistenteDto registrarProductoExistenteDto) throws ElementoNoEncontradoException, ElementoNulosException {
+    public void AgregarCantidadProducto(RegistrarProductoExistenteDto registrarProductoExistenteDto)
+            throws ElementoNoEncontradoException, ElementoNulosException {
 
         // 1. Encontramos el producto existente
         Producto producto = productoService.obtenerProductoAutorizado(registrarProductoExistenteDto.codigoProducto());
 
-        // 4. Obtener personal encargado del registro
+        // 2. Obtenemos personal encargado
         PersonalBodega personalBodega = personaUtilService.obtenerPersonalBodetaEmail(registrarProductoExistenteDto.emaiPersonalBodega());
 
-        // 5. Generamos movimiento del producto
+        // 3. Registramos el movimiento
         MovimientosProducto movimientosProducto =
                 movimientoService.registrarMovimientoProducto(registrarProductoExistenteDto.descripcion(),
-                        personalBodega, TipoMovimiento.INGRESO, producto,registrarProductoExistenteDto.cantidad());
+                        personalBodega, TipoMovimiento.INGRESO, producto, registrarProductoExistenteDto.cantidad());
 
         producto.getHistorialMovimientos().add(movimientosProducto);
-        // 6. Guardamos en la base y esperamos la autorización.
+
+        // 4. Guardamos en base de datos
         productoRepo.save(producto);
 
-        // 7. Notificamos a las otras partes
-        notificacionService.notificarMovimientoProducto("Se ha creado un nuevo ingreso pendiente para el producto "+ producto.getCodigoProducto());
+        // 5. Notificamos el ingreso
+        notificacionService.notificarMovimientoProducto("Se ha creado un nuevo ingreso pendiente para el producto "
+                + producto.getCodigoProducto());
     }
 
-
+    /** Realiza el retiro de un producto.
+    //   Valida que la cantidad sea suficiente, descuenta inventario,
+    //   registra el movimiento y guarda los cambios en espera de autorización.
+     */
     @Override
-    public void RetiroProducto(RetiroProductoDto retiroProductoDto) throws ElementoNoEncontradoException, ElementoNoValidoException {
+    public void RetiroProducto(RetiroProductoDto retiroProductoDto)
+            throws ElementoNoEncontradoException, ElementoNoValidoException {
 
         // 1. Encontramos el producto existente
         Producto producto = productoService.obtenerProductoAutorizado(retiroProductoDto.codigoProducto());
 
-        // 2.1 Validamos si se puede retirar la cantidad requerida
+        // 2. Validamos la cantidad disponible
         if (producto.getCantidad() < retiroProductoDto.cantidad()) {
             throw new ElementoNoValidoException(MensajeError.PRODUCTO_INSUFICIENTE);
         }
 
-        // 2, Descuenta la cantidad del producto
+        // 3. Actualizamos la cantidad
         producto.setCantidad(producto.getCantidad() - retiroProductoDto.cantidad());
 
-        //3. Encontramos personal encargado
+        // 4. Obtenemos personal encargado
         PersonalBodega personalBodega = personaUtilService.obtenerPersonalBodetaEmail(retiroProductoDto.emailPersonalResponsable());
 
-        // 5. Generamos movimiento del producto
+        // 5. Registramos el movimiento
         MovimientosProducto movimientosProducto =
                 movimientoService.registrarMovimientoProducto(retiroProductoDto.descripcion(),
-                        personalBodega, TipoMovimiento.RETIRO, producto,retiroProductoDto.cantidad());
+                        personalBodega, TipoMovimiento.RETIRO, producto, retiroProductoDto.cantidad());
 
         producto.getHistorialMovimientos().add(movimientosProducto);
 
-        // 6. Guardamos en la base y esperamos autorización.
+        // 6. Guardamos cambios
         productoRepo.save(producto);
 
-        // 7. Notificamos a las otras partes
+        // 7. Notificamos el retiro
         notificacionService.notificarMovimientoProducto("Se ha creado un nuevo retiro pendiente para el producto "
                 + producto.getCodigoProducto());
     }
 
+    // Consulta los detalles de un producto específico
     @Override
     public ProductoDto verDetalleProducto(String codigoProducto) throws ElementoNoEncontradoException {
         return productoService.verDetalleProducto(codigoProducto);
     }
 
-
+    // Lista productos aplicando filtros como código, tipo, estado y bodega
     @Override
     public List<ProductoDto> listarProductos(String codigoProducto, TipoProducto tipoProducto,
                                              EstadoProducto estadoProducto, String idBodega, int pagina, int size) {
-
         return productoService.listarProductos(codigoProducto, tipoProducto, estadoProducto, idBodega, pagina, size);
     }
 }

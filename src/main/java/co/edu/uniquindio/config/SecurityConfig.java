@@ -31,7 +31,6 @@ public class SecurityConfig {
     private final JWTFilter jwtFilter;
 
 
-
     // Método de seguridad, configura el manejo de sesiones y donde estas pueden ingresar.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

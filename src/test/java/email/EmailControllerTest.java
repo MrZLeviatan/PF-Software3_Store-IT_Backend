@@ -20,11 +20,24 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Test de integración para el EmailController de Store-IT.
+
+  Estos tests validan la correcta interacción del sistema con:
+  - Registro de cliente tradicional.
+  - Registro de cliente mediante Google.
+  - Verificación de cliente con código enviado por email.
+
+   Se usan componentes reales:
+   SpringBootTest para levantar el contexto completo.
+   MockMvc para simular peticiones HTTP.
+   ObjectMapper para enviar DTOs como JSON.
+  Transaccionalidad para revertir cambios después de cada test.
+ */
 @SpringBootTest(classes = Main.class)       // Levantamos el test con todo y Spring
 @AutoConfigureMockMvc(addFilters = false)  // ignora seguridad
 @Transactional
 public class EmailControllerTest {
-
 
     @Autowired
     private MockMvc mockMvc;
@@ -32,12 +45,12 @@ public class EmailControllerTest {
     @Autowired
     private ObjectMapper objectMapper; // Convierte objetos en JSON
 
+    // DTOs usados en los distintos escenarios de prueba
     private CrearClienteDto crearClienteDto;
-
     private CrearClienteGoogleDto crearClienteGoogleDto;
-
     private VerificacionCodigoDto verificacionCodigoDto;
 
+    // Inicializamos datos comunes antes de cada test
     @BeforeEach
     void setUp() {
         CrearUserDto userDto = new CrearUserDto("nikis281002@gmail.com", "Password123");
@@ -66,18 +79,16 @@ public class EmailControllerTest {
                 ubicacionDto
         );
 
-
-
         verificacionCodigoDto = new VerificacionCodigoDto(
                 "nikis281002@gmail.com",
                 "2BF6E0"
         );
     }
 
-
+    //  Registro tradicional de cliente
     @Test
     void registrarCliente_DeberiaEnviarEmailYRetornar200() throws Exception {
-        //  Ejecutamos la petición REAL al controlador, usando el servicio real (incluye email)
+        // Ejecuta la petición real al endpoint de registro
         mockMvc.perform(post("/api/store-it/registro-clientes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(crearClienteDto)))
@@ -86,10 +97,10 @@ public class EmailControllerTest {
                 .andExpect(jsonPath("$.error").value(false));
     }
 
-
+    //  Verificación de cliente con código enviado por correo
     @Test
     void verificarCliente_DeberiaRetornar200YMensajeExito() throws Exception {
-        //  Ejecuta la petición REAL al endpoint de verificación
+        // Ejecuta la petición real al endpoint de verificación
         mockMvc.perform(post("/api/store-it/verificar-registro-clientes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(verificacionCodigoDto)))
@@ -98,9 +109,10 @@ public class EmailControllerTest {
                 .andExpect(jsonPath("$.error").value(false));
     }
 
+    //  Registro de cliente mediante Google
     @Test
     void registroClienteGoogle_DeberiaEnviarEmailYRetornar200() throws Exception {
-        //  Ejecutamos la petición REAL al controlador, usando el servicio real (incluye email)
+        // Ejecuta la petición real al endpoint de registro con Google
         mockMvc.perform(post("/api/store-it/registro-clientes-google")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(crearClienteGoogleDto)))
@@ -108,6 +120,4 @@ public class EmailControllerTest {
                 .andExpect(jsonPath("$.mensaje").value("Registro logrado exitosamente."))
                 .andExpect(jsonPath("$.error").value(false));
     }
-
 }
-

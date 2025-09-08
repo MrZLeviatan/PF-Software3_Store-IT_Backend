@@ -23,29 +23,40 @@ import java.util.Optional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Clase de pruebas para el controlador de registro de clientes mediante Google en Store-IT.
+
+  Se validan distintos escenarios relacionados con el registro de un nuevo cliente:
+  - Registro exitoso de un cliente nuevo.
+  - Intento de registro con un correo ya asociado a una cuenta activa.
+  - Intento de registro con un correo asociado a una cuenta eliminada.
+  - Intento de registro con un teléfono duplicado.
+
+ * Estas pruebas son de integración y usan MockMvc para simular peticiones HTTP
+ * al endpoint correspondiente. También se verifica el estado en la base de datos
+ * mediante ClienteRepo.
+ */
 @SpringBootTest(classes = Main.class)
-@AutoConfigureMockMvc(addFilters = false) // Ignorar seguridad para pruebas
+@AutoConfigureMockMvc(addFilters = false) // Ignora seguridad en pruebas
 @Transactional
 public class RegistroGoogleControllerTest {
 
+    @Autowired
+    private MockMvc mockMvc; // Permite simular peticiones HTTP al API
 
     @Autowired
-    private MockMvc mockMvc;
+    private ObjectMapper objectMapper; // Serializa y deserializa objetos a JSON
 
     @Autowired
-    private ObjectMapper objectMapper; // Convierte objetos a JSON
+    private ClienteRepo clienteRepo; // Acceso al repositorio de clientes para validaciones
 
-    @Autowired
-    private ClienteRepo clienteRepo;
-
-    private CrearClienteGoogleDto crearClienteGoogleDto;
-
-    private UbicacionDto ubicacionDto;
+    private CrearClienteGoogleDto crearClienteGoogleDto; // DTO base para los tests
+    private UbicacionDto ubicacionDto; // Información de ubicación asociada al cliente
 
     @BeforeEach
     void setUp() {
-
-       ubicacionDto = new UbicacionDto("Colombia", "Medellín", 6.25184, -75.56359);
+        // Inicializa un DTO de ubicación y un cliente base de prueba
+        ubicacionDto = new UbicacionDto("Colombia", "Medellín", 6.25184, -75.56359);
 
         crearClienteGoogleDto = new CrearClienteGoogleDto(
                 "Juan Pérez",
@@ -59,11 +70,9 @@ public class RegistroGoogleControllerTest {
         );
     }
 
-
+    // Registro exitoso de un cliente con datos válidos
     @Test
     void registrarClienteGoogle_Exito_DeberiaRetornar200() throws Exception {
-
-
         mockMvc.perform(post("/api/store-it/registro-clientes-google")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(crearClienteGoogleDto)))
@@ -71,16 +80,15 @@ public class RegistroGoogleControllerTest {
                 .andExpect(jsonPath("$.mensaje").value("Registro logrado exitosamente."))
                 .andExpect(jsonPath("$.error").value(false));
 
-
-        // Verificar que se haya guardado en la BD
+        // Verificación en base de datos
         Optional<Cliente> clienteGuardado = clienteRepo.findByUser_Email("googleuser@test.com");
         assert(clienteGuardado.isPresent());
     }
 
-
+    // Intento de registro con email duplicado y cuenta activa
     @Test
     void registrarClienteGoogle_EmailDuplicadoCuentaActiva_DeberiaRetornar400() throws Exception {
-        // Creamos cliente con estado Activado manualmente en repo
+        // Crear cliente en BD con estado activo
         Cliente cliente = new Cliente();
         cliente.setNombre("Juan");
         cliente.setTelefono("3001234990");
@@ -93,7 +101,7 @@ public class RegistroGoogleControllerTest {
         cliente.setUser(user);
         clienteRepo.save(cliente);
 
-
+        // Intento de registrar otro cliente con el mismo email
         mockMvc.perform(post("/api/store-it/registro-clientes-google")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(crearClienteGoogleDto)))
@@ -102,10 +110,10 @@ public class RegistroGoogleControllerTest {
                 .andExpect(jsonPath("$.error").value(true));
     }
 
-
+    // Intento de registro con email duplicado pero cuenta eliminada
     @Test
     void registrarCliente_EmailDuplicadoCuentaEliminada_DeberiaRetornar400() throws Exception {
-        // Creamos cliente con estado ELIMINADO manualmente en repo
+        // Crear cliente en BD con estado eliminado
         Cliente cliente = new Cliente();
         cliente.setNombre("Juan");
         cliente.setTelefono("3001234990");
@@ -118,7 +126,7 @@ public class RegistroGoogleControllerTest {
         cliente.setUser(user);
         clienteRepo.save(cliente);
 
-
+        // Intento de registrar otro cliente con el mismo email
         mockMvc.perform(post("/api/store-it/registro-clientes-google")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(crearClienteGoogleDto)))
@@ -127,14 +135,15 @@ public class RegistroGoogleControllerTest {
                 .andExpect(jsonPath("$.error").value(true));
     }
 
-
+    // Intento de registro con un teléfono ya registrado
     @Test
     void registrarCliente_TelefonoDuplicado_DeberiaRetornar400() throws Exception {
-
+        // Registrar un cliente con el teléfono base
         mockMvc.perform(post("/api/store-it/registro-clientes-google")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(crearClienteGoogleDto)));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(crearClienteGoogleDto)));
 
+        // Intentar registrar un cliente nuevo con mismo teléfono pero diferente correo
         CrearClienteGoogleDto crearClienteGoogleDto2 = new CrearClienteGoogleDto(
                 "Juan Pérez",
                 "3001234990",
@@ -152,6 +161,4 @@ public class RegistroGoogleControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.mensaje").value("El teléfono ya está registrado"));
     }
-
-
 }

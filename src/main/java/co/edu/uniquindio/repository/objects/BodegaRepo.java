@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BodegaRepo extends JpaRepository<Bodega, Long>, JpaSpecificationExecutor<Bodega> {
 
-
+    // Busca una bodega por su id (sobrescribe el método findById estándar)
     Bodega findById(long id);
 }

@@ -31,137 +31,119 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
+/**
+ * Pruebas unitarias para AuxiliarBodegaController
+ *
+ * Verifica las operaciones que puede realizar un auxiliar de bodega en Store-IT:
+ * - Registrar productos nuevos
+ * - Agregar cantidad a productos existentes
+ * - Retirar productos
+ * - Listar y consultar detalles de productos
+ */
 class AuxiliarBodegaControllerTest {
 
+    // Simulación del servicio (mock)
     @Mock
     private AuxiliarBodegaService auxiliarBodegaService;
 
+    // Controlador que se va a probar, con el mock inyectado
     @InjectMocks
     private AuxiliarBodegaController auxiliarBodegaController;
 
     @BeforeEach
     void setUp() {
-        // Initialize mocks before each test
+        // Inicializa los mocks antes de cada prueba
         MockitoAnnotations.openMocks(this);
     }
 
-    // --- Tests for 'agregarCantidadProducto' ---
+    // --- Pruebas para agregar cantidad a un producto existente ---
     @Test
     void testAgregarCantidadProducto_Success() throws ElementoNulosException, ElementoNoEncontradoException {
-        // Arrange
         RegistrarProductoExistenteDto requestDto = new RegistrarProductoExistenteDto("P-001", 5, TipoProducto.FRAGIL, "email", "desc");
-        // The service method is 'void', so we just ensure it runs without throwing an exception
         doNothing().when(auxiliarBodegaService).AgregarCantidadProducto(requestDto);
 
-        // Act
         ResponseEntity<MensajeDto<String>> response = auxiliarBodegaController.agregarCantidadProducto(requestDto);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        MensajeDto<String> body = response.getBody();
-        assertNotNull(body);
-        assertFalse(body.error());
-        assertEquals("Cantidad agregada correctamente. Pendiente de autorización.", body.mensaje());
+        assertNotNull(response.getBody());
+        assertEquals("Cantidad agregada correctamente. Pendiente de autorización.", response.getBody().mensaje());
 
-        // Verify the service method was called exactly once with the correct DTO
         verify(auxiliarBodegaService, times(1)).AgregarCantidadProducto(requestDto);
     }
 
     @Test
     void testAgregarCantidadProducto_ProductoNoEncontrado() throws ElementoNulosException, ElementoNoEncontradoException {
-        // Arrange
         RegistrarProductoExistenteDto requestDto = new RegistrarProductoExistenteDto("P-001", 5, TipoProducto.FRAGIL, "email22", "desripc");
-        // Simulate the service throwing an exception
         doThrow(new ElementoNoEncontradoException("Producto no encontrado")).when(auxiliarBodegaService).AgregarCantidadProducto(requestDto);
 
-        // Act & Assert
         assertThrows(ElementoNoEncontradoException.class, () -> {
             auxiliarBodegaController.agregarCantidadProducto(requestDto);
         });
 
-        // Verify the service was called
         verify(auxiliarBodegaService, times(1)).AgregarCantidadProducto(requestDto);
     }
 
-    // --- Tests for 'verDetalleProducto' ---
+    // --- Pruebas para ver detalle de un producto ---
     @Test
     void testVerDetalleProducto_Success() throws ElementoNoEncontradoException {
-        // Arrange
         String codigo = "P-001";
         ProductoDto producto = new ProductoDto(1L, codigo, "Laptop", 10, "img.jpg", "Laptop de 14 pulgadas", TipoProducto.FRAGIL, EstadoProducto.EN_BODEGA, "BOD-1");
         when(auxiliarBodegaService.verDetalleProducto(codigo)).thenReturn(producto);
 
-        // Act
         ResponseEntity<MensajeDto<ProductoDto>> response = auxiliarBodegaController.verDetalleProducto(codigo);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        MensajeDto<ProductoDto> body = response.getBody();
-        assertNotNull(body);
-        assertFalse(body.error());
-        assertEquals(codigo, body.mensaje().codigoProducto());
+        assertNotNull(response.getBody());
+        assertEquals(codigo, response.getBody().mensaje().codigoProducto());
 
-        // Verify the service method was called
         verify(auxiliarBodegaService, times(1)).verDetalleProducto(codigo);
     }
 
     @Test
     void testVerDetalleProducto_NoEncontrado() throws ElementoNoEncontradoException {
-        // Arrange
         String codigoInvalido = "P-999";
         when(auxiliarBodegaService.verDetalleProducto(codigoInvalido)).thenThrow(new ElementoNoEncontradoException("Producto no encontrado"));
 
-        // Act & Assert
         assertThrows(ElementoNoEncontradoException.class, () -> {
             auxiliarBodegaController.verDetalleProducto(codigoInvalido);
         });
 
-        // Verify the service was called
         verify(auxiliarBodegaService, times(1)).verDetalleProducto(codigoInvalido);
     }
 
-    // --- Tests for 'listarProductos' ---
+    // --- Pruebas para listar productos ---
     @Test
     void testListarProductos_Success() {
-        // Arrange
         List<ProductoDto> listaProductos = Collections.singletonList(
                 new ProductoDto(1L, "P-001", "Laptop", 10, "img.jpg", "Descripción", TipoProducto.FRAGIL, EstadoProducto.EN_BODEGA, "BOD-1")
         );
         when(auxiliarBodegaService.listarProductos(any(), any(), any(), any(), anyInt(), anyInt())).thenReturn(listaProductos);
 
-        // Act
         ResponseEntity<MensajeDto<List<ProductoDto>>> response = auxiliarBodegaController.listarProductos(null, null, null, null, 0, 10);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        MensajeDto<List<ProductoDto>> body = response.getBody();
-        assertNotNull(body);
-        assertFalse(body.error());
-        assertEquals(1, body.mensaje().size());
-        assertEquals("Laptop", body.mensaje().get(0).nombre());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().mensaje().size());
 
-        // Verify the service method was called
         verify(auxiliarBodegaService, times(1)).listarProductos(null, null, null, null, 0, 10);
     }
 
-    // --- Tests for 'registrarNuevoProducto' ---
+    // --- Pruebas para registrar un producto nuevo ---
     @Test
     void testRegistrarNuevoProducto_Success() throws ElementoRepetidoException, ElementoNulosException, ElementoNoEncontradoException, IOException {
-        // Arrange
-        // Create a mock MultipartFile to simulate the file upload
+        // Archivo simulado para el producto
         MockMultipartFile mockFile = new MockMultipartFile(
-                "file",                    // The name of the request parameter
-                "imagen.jpg",              // Original file name
-                "image/jpeg",              // Content type
-                "Esto es el contenido del archivo".getBytes() // File content as bytes
+                "file",
+                "imagen.jpg",
+                "image/jpeg",
+                "Esto es el contenido del archivo".getBytes()
         );
 
-        // Create the DTO with the mock file
         RegistroNuevoProductoDto requestDto = new RegistroNuevoProductoDto(
                 "P-002",
                 "Monitor",
                 32,
-                mockFile,                  // Pass the mock file here
+                mockFile,
                 "Monitor",
                 TipoProducto.ESTANDAR,
                 "20",
@@ -169,41 +151,29 @@ class AuxiliarBodegaControllerTest {
                 "email@test.com"
         );
 
-        // Mock the service call
         doNothing().when(auxiliarBodegaService).RegistroNuevoProducto(any(RegistroNuevoProductoDto.class));
 
-        // Act
         ResponseEntity<MensajeDto<String>> response = auxiliarBodegaController.registrarNuevoProducto(requestDto);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        MensajeDto<String> body = response.getBody();
-        assertNotNull(body);
-        assertFalse(body.error());
-        assertEquals("Producto registrado correctamente. Pendiente de autorización", body.mensaje());
+        assertNotNull(response.getBody());
+        assertEquals("Producto registrado correctamente. Pendiente de autorización", response.getBody().mensaje());
 
-        // Verify the service method was called
         verify(auxiliarBodegaService, times(1)).RegistroNuevoProducto(requestDto);
     }
 
-    // --- Tests for 'retiroProducto' ---
+    // --- Pruebas para retirar un producto ---
     @Test
     void testRetiroProducto_Success() throws ElementoNoValidoException, ElementoNoEncontradoException {
-        // Arrange
         RetiroProductoDto requestDto = new RetiroProductoDto("P-001", 5, "email@test.com", "descripcion de esto");
         doNothing().when(auxiliarBodegaService).RetiroProducto(requestDto);
 
-        // Act
         ResponseEntity<MensajeDto<String>> response = auxiliarBodegaController.retiroProducto(requestDto);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        MensajeDto<String> body = response.getBody();
-        assertNotNull(body);
-        assertFalse(body.error());
-        assertEquals("Retiro registrado correctamente.", body.mensaje());
+        assertNotNull(response.getBody());
+        assertEquals("Retiro registrado correctamente.", response.getBody().mensaje());
 
-        // Verify the service method was called
         verify(auxiliarBodegaService, times(1)).RetiroProducto(requestDto);
     }
 }

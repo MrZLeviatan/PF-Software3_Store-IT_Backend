@@ -31,14 +31,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = Main.class) // Levantamos todo el contexto Spring
-@AutoConfigureMockMvc(addFilters = false) // Ignora seguridad para pruebas
-@Transactional
+/**
+ * Pruebas de integración para el registro de productos
+ * en el módulo de Auxiliar de Bodega de Store-IT.
+ *
+ * Se valida:
+ * - Caso exitoso (producto válido)
+ * - Validaciones de campos obligatorios
+ * - Persistencia en la base de datos
+ */
+@SpringBootTest(classes = Main.class) // Levanta todo el contexto de Spring
+@AutoConfigureMockMvc(addFilters = false) // Desactiva seguridad en pruebas
+@Transactional // Limpia cambios después de cada test
 public class RegistroProductoControllerTest {
 
-
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc; // Cliente simulado para pruebas HTTP
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -52,6 +60,7 @@ public class RegistroProductoControllerTest {
     @Autowired
     private PersonalBodegaRepo personalBodegaRepo;
 
+    // --- Métodos helper para armar datos válidos ---
     private Bodega crearBodegaValida() {
         Bodega bodega = new Bodega();
         Ubicacion ubicacion = new Ubicacion("Colombia", "Medellín", 6.25, -75.56);
@@ -62,7 +71,7 @@ public class RegistroProductoControllerTest {
     }
 
     private PersonalBodega crearPersonalBodegaValido() {
-        // Datos de contrato y laborales
+        // Datos laborales simulados
         DatosLaborales datosLaborales = new DatosLaborales();
         datosLaborales.setFechaInicioContrato(LocalDate.now().minusMonths(1));
         datosLaborales.setFechaFinContrato(null); // Contrato activo
@@ -80,41 +89,40 @@ public class RegistroProductoControllerTest {
         PersonalBodega personal = new PersonalBodega();
         personal.setNombre("Juan Auxiliar");
         personal.setTelefono("3101234567");
-        personal.setTelefonoSecundario(null);
         personal.setDatosLaborales(datosLaborales);
         personal.setUser(user);
         personal.setTipoPersonalBodega(TipoPersonalBodega.AUXILIAR_BODEGA);
 
-        return personalBodegaRepo.save(personal); // 🔥 Persistimos para que exista en DB
+        return personalBodegaRepo.save(personal); // Se guarda en BD
     }
 
-
-
-    // Método helper para crear un DTO válido
+    // DTO válido para pruebas
     private RegistroNuevoProductoDto crearProductoValido(Bodega bodega, PersonalBodega personalBodega) {
         return new RegistroNuevoProductoDto(
                 "PROD001",
                 "Leche Entera",
                 10,
-                null, // MultipartFile opcional
+                null, // archivo opcional
                 "Leche fresca en caja",
                 TipoProducto.ESTANDAR,
-                bodega.getId().toString(), // idBodega
+                bodega.getId().toString(),
                 personalBodega.getUser().getEmail(),
                 "Ingreso inicial de stock"
         );
     }
 
-    // ✅ Caso exitoso: registrar un nuevo producto
+    // ✅ Caso exitoso: registrar producto válido
     @Test
     void registrarNuevoProducto_DeberiaRetornar200YMensajeExito() throws Exception {
-        Bodega bodega = crearBodegaValida(); // Bodega quemada
-        bodegaRepo.save(bodega); // Guardamos en la base
+        Bodega bodega = crearBodegaValida();
+        bodegaRepo.save(bodega);
+
         PersonalBodega personal = crearPersonalBodegaValido();
-        personalBodegaRepo.save(personal); // 🔥 Guardamos el personal
+        personalBodegaRepo.save(personal);
 
         RegistroNuevoProductoDto dto = crearProductoValido(bodega, personal);
 
+        // Imagen simulada
         File file = new File("src/test/resources/imagenProducto.jpg");
         MockMultipartFile imagen = new MockMultipartFile(
                 "imagenProducto",
@@ -124,7 +132,7 @@ public class RegistroProductoControllerTest {
         );
 
         mockMvc.perform(multipart("/api/auxiliar-bodega/productos")
-                        .file(imagen) // vacía para prueba
+                        .file(imagen)
                         .param("codigoProducto", dto.codigoProducto())
                         .param("nombre", dto.nombre())
                         .param("cantidad", String.valueOf(dto.cantidad()))
@@ -143,8 +151,7 @@ public class RegistroProductoControllerTest {
         assertEquals(dto.nombre(), productoGuardado.getNombre());
     }
 
-
-    // ❌ Falta de campo obligatorio -> nombre vacío
+    // ❌ Nombre vacío -> error de validación
     @Test
     void registrarNuevoProducto_NombreVacio_DeberiaRetornar400() throws Exception {
         RegistroNuevoProductoDto dto = new RegistroNuevoProductoDto(
@@ -175,7 +182,7 @@ public class RegistroProductoControllerTest {
                 .andExpect(jsonPath("$.mensaje").exists());
     }
 
-    // ❌ Cantidad nula -> debe lanzar validación
+    // ❌ Cantidad nula -> error de validación
     @Test
     void registrarNuevoProducto_CantidadNula_DeberiaRetornar400() throws Exception {
         RegistroNuevoProductoDto dto = new RegistroNuevoProductoDto(
