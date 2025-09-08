@@ -1,5 +1,5 @@
 # Build stage
-FROM gradle:9.0-jdk21 AS build
+FROM gradle:9.0-jdk22 AS build
 
 WORKDIR /home/gradle/src
 
