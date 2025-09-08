@@ -50,6 +50,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/store-it/**").permitAll() // Público store-it
                         .requestMatchers("/api/gestor-bodega/**").hasAnyAuthority("ROLE_GESTOR_BODEGA")
                         .requestMatchers("/api/auxiliar-bodega/**").hasAnyAuthority("ROLE_AUXILIAR_BODEGA")
+                        // Permitir acceso al endpoint de prometheus
+                        .requestMatchers("/actuator/prometheus").permitAll()
                         .anyRequest().authenticated() // Resto requiere login
                 )
                 // Manejo de errores de autenticación

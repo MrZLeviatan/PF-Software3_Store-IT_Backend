@@ -130,7 +130,7 @@ class AuxiliarBodegaControllerTest {
 
     // --- Pruebas para registrar un producto nuevo ---
     @Test
-    void testRegistrarNuevoProducto_Success() throws ElementoRepetidoException, ElementoNulosException, ElementoNoEncontradoException, IOException {
+    void testRegistrarNuevoProducto_Success() throws ElementoRepetidoException, ElementoNulosException, ElementoNoEncontradoException, IOException, ElementoNoValidoException {
         // Archivo simulado para el producto
         MockMultipartFile mockFile = new MockMultipartFile(
                 "file",

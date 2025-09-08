@@ -101,9 +101,10 @@ dependencies {
     // Starter de pruebas de Spring Boot (JUnit 5, Mockito, etc.).
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // Looger
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+
 }
 
-
-tasks.withType<Test>{
-    useJUnitPlatform()
-}
