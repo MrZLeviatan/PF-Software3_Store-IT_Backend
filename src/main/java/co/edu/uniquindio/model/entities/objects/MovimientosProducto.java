@@ -44,7 +44,7 @@ public class MovimientosProducto {
 
     @Column(name = "esta_verificado", nullable = false)
     @Comment("Indica si el movimiento esta en revision o no.")
-    private boolean isVerificado = false; // false por defecto
+    private boolean isVerificado;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado_movimiento")

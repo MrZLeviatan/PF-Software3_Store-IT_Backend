@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public record RegistroNuevoProductoDto(
         // Código único del producto. No puede estar en blanco.
+
         @NotBlank String codigoProducto,
         // Nombre del producto. No puede estar en blanco.
         @NotBlank String nombre,

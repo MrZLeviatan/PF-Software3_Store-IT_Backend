@@ -16,7 +16,8 @@ public interface MovimientoMapper {
     // Los @Mapping se usan para especificar cómo mapear los campos,
     // en este caso, se extraen los IDs de los objetos relacionados.
     @Mapping(target = "idProducto", source = "producto.id")
-    @Mapping(target = "idPersonalResponsable", source = "personalResponsable.id")
-    @Mapping(target = "idPersonalAutorizado", source = "personalAutorizacion.id")
+    @Mapping(target = "emailPersonalResponsable", source = "personalResponsable.user.email")
+    @Mapping(target = "emailPersonalAutorizado", source = "personalAutorizacion.user.email")
+    @Mapping(target = "isVerificado", source = "verificado")
     MovimientosProductoDto toDto (MovimientosProducto movimientosProducto);
 }

@@ -40,4 +40,5 @@ public interface MovimientoService {
                                                    String idBodega,
                                                    int pagina,
                                                    int size);
+
 }

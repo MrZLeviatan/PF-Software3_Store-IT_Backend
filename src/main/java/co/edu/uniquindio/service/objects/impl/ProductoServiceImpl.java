@@ -1,8 +1,10 @@
 package co.edu.uniquindio.service.objects.impl;
 
 import co.edu.uniquindio.constants.MensajeError;
+import co.edu.uniquindio.dto.objects.movimientoProducto.MovimientosProductoDto;
 import co.edu.uniquindio.dto.objects.producto.ProductoDto;
 import co.edu.uniquindio.exception.ElementoNoEncontradoException;
+import co.edu.uniquindio.mapper.objects.MovimientoMapper;
 import co.edu.uniquindio.mapper.objects.ProductoMapper;
 import co.edu.uniquindio.model.entities.objects.Producto;
 import co.edu.uniquindio.model.enums.EstadoProducto;
@@ -32,6 +34,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     // Mapper para convertir entidades Producto a DTOs
     private final ProductoMapper productoMapper;
+    private final MovimientoMapper movimientoMapper;
 
     /* Obtiene los detalles de un producto específico y lo devuelve en formato DTO.
        Lanza excepción si el producto no existe. */
@@ -64,6 +67,17 @@ public class ProductoServiceImpl implements ProductoService {
     /** Lista productos aplicando filtros opcionales como código, tipo, estado y bodega.
        Los resultados se devuelven de manera paginada y transformados a DTOs.
      */
+    @Override
+    public List<MovimientosProductoDto> obtenerMovimientosProductoEspecifico(String codigoProducto) throws ElementoNoEncontradoException {
+
+        Producto producto = obtenerProducto(codigoProducto);
+
+        return producto.getHistorialMovimientos().stream()
+                .map(movimientoMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+
     @Override
     public List<ProductoDto> listarProductos(String codigoProducto, TipoProducto tipoProducto,
                                              EstadoProducto estadoProducto, String idBodega,
@@ -103,6 +117,52 @@ public class ProductoServiceImpl implements ProductoService {
         Page<Producto> productosPage = productoRepo.findAll(spec, pageable);
 
         // 8. Mapear entidades a DTOs y devolver lista
+        return productosPage.getContent().stream()
+                .map(productoMapper::toDto)
+                .collect(Collectors.toList());
+    }
+  
+    @Override
+    public List<ProductoDto> listarProductosAutorizados(String codigoProducto, TipoProducto tipoProducto,
+                                             EstadoProducto estadoProducto, String idBodega, int pagina, int size) {
+
+        // 1. Construir Pageable para paginación / Build Pageable for pagination
+        Pageable pageable = PageRequest.of(pagina, size);
+
+        // 2. Crear predicado dinámico con filtros opcionales / Create dynamic predicate with optional filters
+        Specification<Producto> spec = Specification.where(
+                // 🔹 Filtro obligatorio: solo productos autorizados / Mandatory filter: only authorized products
+                (root, query, builder) -> builder.isTrue(root.get("isAutorizado"))
+        );
+
+        // 3. Filtrar por código de producto si se proporciona / Filter by product code if provided
+        if (codigoProducto != null && !codigoProducto.isEmpty()) {
+            spec = spec.and((root, query, builder) ->
+                    builder.equal(root.get("codigoProducto"), codigoProducto));
+        }
+
+        // 4. Filtrar por tipo de producto si se proporciona / Filter by product type if provided
+        if (tipoProducto != null) {
+            spec = spec.and((root, query, builder) ->
+                    builder.equal(root.get("tipoProducto"), tipoProducto));
+        }
+
+        // 5. Filtrar por estado del producto si se proporciona / Filter by product state if provided
+        if (estadoProducto != null) {
+            spec = spec.and((root, query, builder) ->
+                    builder.equal(root.get("estadoProducto"), estadoProducto));
+        }
+
+        // 6. Filtrar por bodega si se proporciona / Filter by warehouse if provided
+        if (idBodega != null && !idBodega.isEmpty()) {
+            spec = spec.and((root, query, builder) ->
+                    builder.equal(root.get("bodega").get("id"), Long.parseLong(idBodega)));
+        }
+
+        // 7. Obtener la lista paginada de productos filtrados / Get paginated list of filtered products
+        Page<Producto> productosPage = productoRepo.findAll(spec, pageable);
+
+        // 8. Convertir a DTOs y devolver / Convert to DTOs and return
         return productosPage.getContent().stream()
                 .map(productoMapper::toDto)
                 .collect(Collectors.toList());

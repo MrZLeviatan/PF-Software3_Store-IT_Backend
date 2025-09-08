@@ -148,8 +148,12 @@ public class GestorBodegasServiceImpl implements GestorBodegasService {
     }
 
     @Override
-    public MovimientosProductoDto verDetallesMovimiento(Long idMovimientosProducto)
-            throws ElementoNoEncontradoException {
+    public List<MovimientosProductoDto> obtenerMovimientoProductoEspecifico(String codigoProducto) throws ElementoNoEncontradoException {
+        return productoService.obtenerMovimientosProductoEspecifico(codigoProducto);
+    }
+
+    @Override
+    public MovimientosProductoDto verDetallesMovimiento(Long idMovimientosProducto) throws ElementoNoEncontradoException {
         return movimientoService.verDetalleMovimiento(idMovimientosProducto);
     }
 

@@ -74,6 +74,20 @@ public class GestorBodegaController {
     }
 
 
+    // Obtener lista de movimientos de un producto específico por su código
+    @GetMapping("/movimientos/producto/{codigoProducto}")
+    public ResponseEntity<MensajeDto<List<MovimientosProductoDto>>> obtenerMovimientosProductoEspecifico(
+            @PathVariable String codigoProducto
+    ) throws ElementoNoEncontradoException {
+
+        // 1. Llamar al servicio para obtener los movimientos del producto
+        List<MovimientosProductoDto> movimientos = gestorBodegasService.obtenerMovimientoProductoEspecifico(codigoProducto);
+
+        // 2. Retornar la respuesta en un contenedor estándar
+        return ResponseEntity.ok().body(new MensajeDto<>(false, movimientos));
+    }
+
+
     // Obtener lista de movimientos de productos con filtros y paginación
     @GetMapping("/movimientos")
     public ResponseEntity<MensajeDto<List<MovimientosProductoDto>>> obtenerMovimientosProducto(

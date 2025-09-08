@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll() // Login/registro públicos
                         .requestMatchers("/api/store-it/**").permitAll() // Público store-it
                         .requestMatchers("/api/gestor-bodega/**").hasAnyAuthority("ROLE_GESTOR_BODEGA")
-                        .requestMatchers("/api/auxiliar-bodega/^**").hasAnyAuthority("ROLE_AUXILIAR_BODEGA")
+                        .requestMatchers("/api/auxiliar-bodega/**").hasAnyAuthority("ROLE_AUXILIAR_BODEGA")
                         .anyRequest().authenticated() // Resto requiere login
                 )
                 // Manejo de errores de autenticación

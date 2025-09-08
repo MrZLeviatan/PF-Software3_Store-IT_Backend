@@ -1,6 +1,8 @@
 package co.edu.uniquindio.dto.objects.producto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 /**
   Este es un record de Java que sirve como un DTO (Data Transfer Object) para manejar la información
   necesaria para el retiro de un producto de una bodega.
@@ -13,7 +15,7 @@ public record RetiroProductoDto(
         // Código único del producto que se va a retirar. No puede estar en blanco.
         @NotBlank String codigoProducto,
         // Cantidad del producto que se retira.
-        Integer cantidad,
+        @NotNull Integer cantidad,
         // Email del personal de bodega responsable del retiro. No puede estar en blanco.
         @NotBlank String emailPersonalResponsable,
         // Descripción opcional del motivo del retiro.

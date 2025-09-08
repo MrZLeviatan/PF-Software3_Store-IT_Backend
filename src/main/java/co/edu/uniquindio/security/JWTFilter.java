@@ -60,8 +60,12 @@ public class JWTFilter extends OncePerRequestFilter {
             String role = payload.getPayload().get("rol", String.class); // Rol del usuario
 
             // Se normaliza el rol al formato estándar de Spring Security (ROLE_XXX)
-            if (!role.startsWith("ROLE_")) {
-                role = "ROLE_" + role.substring(4); // Convierte ROL_XX en ROLE_XX
+            if (role.startsWith("ROL_")) {
+                // Caso: si el token trae "ROL_AUXILIAR_BODEGA" → convertirlo
+                role = "ROLE_" + role.substring(4);
+            } else if (!role.startsWith("ROLE_")) {
+                // Caso: si viene "AUXILIAR_BODEGA" → agregar prefijo
+                role = "ROLE_" + role;
             }
 
             // Verifica si ya hay una autenticación activa en el contexto
