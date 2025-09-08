@@ -18,7 +18,7 @@ description = "Proyecto basado en el desarrollo para el sistema Store-It!, " +
 java{
     toolchain{
         // Se define la versión de Java a utilizar (Java 22).
-        languageVersion.set(JavaLanguageVersion.of(22))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
