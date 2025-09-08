@@ -10,6 +10,8 @@ import co.edu.uniquindio.exception.*;
 import co.edu.uniquindio.service.users.ClienteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,18 +78,25 @@ public class ClienteBannerController {
     }
 
     // Nuevo endpoint que recibe email y código desde el link
-    @GetMapping("/verificar-registro-clientes")
-    public ResponseEntity<MensajeDto<String>> verificarRegistroClientePorLink(
-            @RequestParam String email,
-            @RequestParam String codigo
-    ) throws ElementoNoEncontradoException, ElementoNoCoincideException, ElementoIncorrectoException {
 
-        VerificacionCodigoDto dto = new VerificacionCodigoDto(email, codigo);
-        clienteService.verificacionCliente(dto);
+        @GetMapping("/verificar-registro-clientes")
+        public ResponseEntity<Void> verificarRegistroClientePorLink(
+                @RequestParam String email,
+                @RequestParam String codigo
+        ) throws ElementoNoEncontradoException, ElementoNoCoincideException, ElementoIncorrectoException {
 
-        return ResponseEntity.ok(
-                new MensajeDto<>(false, "Cliente verificado con éxito a través del link.")
-        );
+            // 1. Ejecutar la verificación en el backend
+            VerificacionCodigoDto dto = new VerificacionCodigoDto(email, codigo);
+            clienteService.verificacionCliente(dto);
+
+            // 2. URL del frontend a donde redirigir al usuario
+            String frontendUrl = "https://pfs3-storeit.web.app/";
+
+            // 3. Responder con un redirect al frontend
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Location", frontendUrl);
+            return new ResponseEntity<>(headers, HttpStatus.FOUND); // 302 Redirect
+        }
     }
 
-}
+
