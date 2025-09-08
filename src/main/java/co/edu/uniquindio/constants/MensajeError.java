@@ -3,7 +3,6 @@ package co.edu.uniquindio.constants;
 /**
  * clase para mostrar emensajes de errores
  */
-package co.edu.uniquindio.util;
 
 public class MensajeError {
 
