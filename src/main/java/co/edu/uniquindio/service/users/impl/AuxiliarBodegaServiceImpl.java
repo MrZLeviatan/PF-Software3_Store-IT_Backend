@@ -1,6 +1,7 @@
 package co.edu.uniquindio.service.users.impl;
 
 import co.edu.uniquindio.constants.MensajeError;
+import co.edu.uniquindio.dto.objects.bodega.BodegaDto;
 import co.edu.uniquindio.dto.objects.producto.ProductoDto;
 import co.edu.uniquindio.dto.objects.producto.RegistrarProductoExistenteDto;
 import co.edu.uniquindio.dto.objects.producto.RegistroNuevoProductoDto;
@@ -20,6 +21,7 @@ import co.edu.uniquindio.model.enums.TipoProducto;
 import co.edu.uniquindio.repository.objects.BodegaRepo;
 import co.edu.uniquindio.repository.objects.ProductoRepo;
 import co.edu.uniquindio.repository.users.PersonalBodegaRepo;
+import co.edu.uniquindio.service.objects.BodegaService;
 import co.edu.uniquindio.service.objects.MovimientoService;
 import co.edu.uniquindio.service.objects.NotificacionService;
 import co.edu.uniquindio.service.objects.ProductoService;
@@ -39,18 +41,19 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
 
     private final ProductoMapper productoMapper;
     private final ProductoRepo productoRepo;
-    private final PersonalBodegaRepo personaRepo;
     private final BodegaRepo bodegaRepo;
     private final CloudinaryService cloudinaryService;
     private final MovimientoService movimientoService;
     private final ProductoService productoService;
     private final NotificacionService notificacionService;
     private final PersonaUtilService personaUtilService;
+    private final BodegaService bodegaService;
+
 
 
     @Override
     public void RegistroNuevoProducto(RegistroNuevoProductoDto registroNuevoProductoDto)
-            throws ElementoRepetidoException, ElementoNulosException, ElementoNoEncontradoException {
+            throws ElementoRepetidoException, ElementoNulosException, ElementoNoEncontradoException, ElementoNoValidoException {
 
         // 1. Verificamos que el producto no exista
         if (productoRepo.existsByCodigoProducto(registroNuevoProductoDto.codigoProducto())){
@@ -81,6 +84,8 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
         producto.setImagen(urlImagen);
         producto.setBodega(bodega);
 
+        productoRepo.save(producto);
+
         // 5. Registramos un movimiento del producto
         MovimientosProducto movimientosProducto =
                 movimientoService.registrarMovimientoProducto(
@@ -106,7 +111,7 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
         Producto producto = productoService.obtenerProductoAutorizado(registrarProductoExistenteDto.codigoProducto());
 
         // 4. Obtener personal encargado del registro
-        PersonalBodega personalBodega = personaUtilService.obtenerPersonalBodetaEmail(registrarProductoExistenteDto.emaiPersonalBodega());
+        PersonalBodega personalBodega = personaUtilService.obtenerPersonalBodetaEmail(registrarProductoExistenteDto.emailPersonalBodega());
 
         // 5. Generamos movimiento del producto
         MovimientosProducto movimientosProducto =
@@ -164,6 +169,11 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
     public List<ProductoDto> listarProductos(String codigoProducto, TipoProducto tipoProducto,
                                              EstadoProducto estadoProducto, String idBodega, int pagina, int size) {
 
-        return productoService.listarProductos(codigoProducto, tipoProducto, estadoProducto, idBodega, pagina, size);
+        return productoService.listarProductosAutorizados(codigoProducto, tipoProducto, estadoProducto, idBodega, pagina, size);
+    }
+
+    @Override
+    public List<BodegaDto> obtenerBodegas() {
+        return bodegaService.listarTodasBodegas();
     }
 }

@@ -2,6 +2,7 @@ package co.edu.uniquindio.service.utils.impl;
 
 import co.edu.uniquindio.constants.MensajeError;
 import co.edu.uniquindio.exception.CargaFallidaException;
+import co.edu.uniquindio.exception.ElementoNoValidoException;
 import co.edu.uniquindio.service.utils.CloudinaryService;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
@@ -30,6 +31,9 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     private Cloudinary cloudinary;
 
+    // Límite de tamaño permitido (5 MB en este caso)
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
+
     // Inicializa Cloudinary después de inyectar las variables
     @PostConstruct
     private void init() {
@@ -47,8 +51,13 @@ public class CloudinaryServiceImpl implements CloudinaryService {
      * @return URL segura de la imagen subida
      */
     @Override
-    public String uploadImage(MultipartFile file) {
+    public String uploadImage(MultipartFile file) throws ElementoNoValidoException {
         try {
+
+            if (file.getSize() > MAX_FILE_SIZE){
+                throw new ElementoNoValidoException("La imagen excede el tamaño máximo permitido");
+            }
+
             // Convertimos MultipartFile a File temporal
             File archivo = convertir(file);
 

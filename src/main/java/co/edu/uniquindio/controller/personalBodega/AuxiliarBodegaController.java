@@ -1,6 +1,7 @@
 package co.edu.uniquindio.controller.personalBodega;
 
 import co.edu.uniquindio.dto.MensajeDto;
+import co.edu.uniquindio.dto.objects.bodega.BodegaDto;
 import co.edu.uniquindio.dto.objects.producto.ProductoDto;
 import co.edu.uniquindio.dto.objects.producto.RegistrarProductoExistenteDto;
 import co.edu.uniquindio.dto.objects.producto.RegistroNuevoProductoDto;
@@ -30,7 +31,7 @@ public class AuxiliarBodegaController {
     @PostMapping("/productos")
     public ResponseEntity<MensajeDto<String>> registrarNuevoProducto(
             @ModelAttribute @Valid RegistroNuevoProductoDto registroNuevoProductoDto)
-            throws ElementoRepetidoException, ElementoNulosException, ElementoNoEncontradoException {
+            throws ElementoRepetidoException, ElementoNulosException, ElementoNoEncontradoException, ElementoNoValidoException {
 
         auxiliarBodegaService.RegistroNuevoProducto(registroNuevoProductoDto);
         return ResponseEntity.ok().body(new MensajeDto<>(false, "Producto registrado correctamente. Pendiente de autorización"));
@@ -78,5 +79,14 @@ public class AuxiliarBodegaController {
         List<ProductoDto> productos = auxiliarBodegaService.listarProductos(codigoProducto, tipoProducto, estadoProducto, idBodega, pagina, size);
         return ResponseEntity.ok().body(new MensajeDto<>(false , productos));
     }
+
+
+    @GetMapping("/bodegas")
+    public ResponseEntity<MensajeDto<List<BodegaDto>>> listarBodegas(){
+        List<BodegaDto> bodegas = auxiliarBodegaService.obtenerBodegas();
+        return ResponseEntity.ok().body(new MensajeDto<>(false , bodegas));
+    }
+
+
 }
 

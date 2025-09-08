@@ -42,6 +42,7 @@ public class MovimientoServiceImpl implements MovimientoService {
         movimientosProducto.setFechaMovimiento(LocalDateTime.now());
         movimientosProducto.setProducto(producto);
         movimientosProducto.setCantidad(cantidad);
+        movimientosProducto.setVerificado(false);
         movimientosProducto.setPersonalResponsable(personalResponsable);
 
         movimientoProductoRepo.save(movimientosProducto);

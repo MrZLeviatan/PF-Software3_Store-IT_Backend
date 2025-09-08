@@ -12,10 +12,12 @@ public record MovimientosProductoDto(
         TipoMovimiento tipoMovimiento,
         LocalDateTime fechaMovimiento,
         LocalDateTime fechaAutorizacion,
+        Integer cantidad,
         String descripcionAutorizado,
         String idProducto,
-        String idPersonalResponsable,
-        String idPersonalAutorizado
+        String emailPersonalResponsable,
+        String emailPersonalAutorizado,
+        boolean isVerificado
 
-        ) {
+) {
 }

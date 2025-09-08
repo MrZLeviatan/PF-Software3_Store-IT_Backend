@@ -25,6 +25,8 @@ public interface GestorBodegasService {
             String codigoProducto, TipoProducto tipoProducto,
             EstadoProducto estadoProducto, String idBodega, int pagina, int size);
 
+    List<MovimientosProductoDto> obtenerMovimientoProductoEspecifico(String codigoProducto) throws ElementoNoEncontradoException;
+
     MovimientosProductoDto verDetallesMovimiento(Long idMovimientosProducto) throws ElementoNoEncontradoException;
 
     List<MovimientosProductoDto> obtenerMovimientosProducto(String codigoProducto, TipoMovimiento tipoMovimiento,

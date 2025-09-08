@@ -1,5 +1,6 @@
 package co.edu.uniquindio.service.users;
 
+import co.edu.uniquindio.dto.objects.bodega.BodegaDto;
 import co.edu.uniquindio.dto.objects.producto.ProductoDto;
 import co.edu.uniquindio.dto.objects.producto.RegistrarProductoExistenteDto;
 import co.edu.uniquindio.dto.objects.producto.RegistroNuevoProductoDto;
@@ -17,7 +18,7 @@ public interface AuxiliarBodegaService {
 
 
     void RegistroNuevoProducto(RegistroNuevoProductoDto registroNuevoProductoDto)
-            throws ElementoRepetidoException, ElementoNulosException, ElementoNoEncontradoException;
+            throws ElementoRepetidoException, ElementoNulosException, ElementoNoEncontradoException, ElementoNoValidoException;
 
     void AgregarCantidadProducto(RegistrarProductoExistenteDto registrarProductoExistenteDto)
             throws ElementoNoEncontradoException, ElementoNulosException;
@@ -30,5 +31,8 @@ public interface AuxiliarBodegaService {
 
     List<ProductoDto> listarProductos(String codigoProducto, TipoProducto tipoProducto,
                                       EstadoProducto estadoProducto, String idBodega, int pagina, int size);
+
+
+    List<BodegaDto> obtenerBodegas();
 
 }

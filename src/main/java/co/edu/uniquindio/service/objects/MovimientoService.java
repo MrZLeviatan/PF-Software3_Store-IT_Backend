@@ -26,6 +26,8 @@ public interface MovimientoService {
             throws ElementoNoEncontradoException;
 
 
+
+
     List<MovimientosProductoDto> listarMovimientos (
             String codigoProducto, TipoMovimiento tipoMovimiento, LocalDateTime fechaMovimiento,
             String emailPersonalResponsable, String emailPersonalAutorizado, String idBodega, int pagina, int size);
