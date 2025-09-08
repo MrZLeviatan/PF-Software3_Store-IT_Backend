@@ -1,15 +1,14 @@
-# Etapa de build
-FROM gradle:9.0-jdk22 AS build
+# Build stage
+FROM gradle:9.0-jdk21 AS build
 WORKDIR /home/gradle/src
 COPY --chown=gradle:gradle . .
-RUN chmod +x gradlew
 RUN ./gradlew clean bootJar -x test
 
-# Etapa de ejecución
-FROM openjdk:22-jdk-slim
-ARG JAR_FILE=build/libs/*.jar
+# Package stage
+FROM openjdk:21-jdk-slim
 COPY --from=build /home/gradle/src/build/libs/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app.jar"]
+
 
 
