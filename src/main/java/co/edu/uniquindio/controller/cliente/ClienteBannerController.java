@@ -11,10 +11,7 @@ import co.edu.uniquindio.service.users.ClienteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /** Este es un controlador REST para el registro y la autenticación de clientes.
   Proporciona endpoints para que los clientes se registren en la aplicación,
@@ -77,4 +74,20 @@ public class ClienteBannerController {
         clienteService.verificacionCliente(verificacionCodigoDto);
         return ResponseEntity.ok(new MensajeDto<>(false ,"Cliente verificado con éxito."));
     }
+
+    // Nuevo endpoint que recibe email y código desde el link
+    @GetMapping("/verificar-registro-clientes")
+    public ResponseEntity<MensajeDto<String>> verificarRegistroClientePorLink(
+            @RequestParam String email,
+            @RequestParam String codigo
+    ) throws ElementoNoEncontradoException, ElementoNoCoincideException, ElementoIncorrectoException {
+
+        VerificacionCodigoDto dto = new VerificacionCodigoDto(email, codigo);
+        clienteService.verificacionCliente(dto);
+
+        return ResponseEntity.ok(
+                new MensajeDto<>(false, "Cliente verificado con éxito a través del link.")
+        );
+    }
+
 }

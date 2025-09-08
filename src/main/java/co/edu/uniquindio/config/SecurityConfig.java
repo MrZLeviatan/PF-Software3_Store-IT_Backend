@@ -72,7 +72,7 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-                "*"
+                "https://pfs3-storeit.web.app"
         ));
         // Permite solicitudes desde cualquier origen (en producción es mejor restringir esto)
 
