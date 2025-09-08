@@ -24,7 +24,7 @@ public class DatosInicialesRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
+      /**
         // Creamos dos personal de bodega quemado
         PersonalBodega personalBodegaGestor = new PersonalBodega();
         personalBodegaGestor.setNombre("Nicolas Cabrera");
@@ -63,5 +63,8 @@ public class DatosInicialesRunner implements CommandLineRunner {
         personalBodegaAuxiliar.setDatosLaborales(datosLaboralesAux);
         personalBodegaAuxiliar.setTipoPersonalBodega(TipoPersonalBodega.AUXILIAR_BODEGA);
         personalBodegaRepo.save(personalBodegaAuxiliar);
+
+       **/
     }
-}
+       }
+
