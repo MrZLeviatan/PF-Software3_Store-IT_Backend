@@ -70,9 +70,6 @@ public class DatosInicialesRunner implements CommandLineRunner {
         personalBodegaAuxiliar.setTipoPersonalBodega(TipoPersonalBodega.AUXILIAR_BODEGA);
         personalBodegaRepo.save(personalBodegaAuxiliar);
 
-       **/
-
-
         Bodega bodega = new Bodega();
         Ubicacion ubicacion = new Ubicacion();
         ubicacion.setCiudad("Medellín");
@@ -83,6 +80,8 @@ public class DatosInicialesRunner implements CommandLineRunner {
         bodega.setDireccion("Calle 20 # 10");
         bodega.setTelefono("+57 311487819");
         bodegaRepo.save(bodega);
+
+       **/
     }
        }
 
