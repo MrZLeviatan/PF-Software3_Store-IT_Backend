@@ -115,7 +115,7 @@ public class AuxiliarBodegaServiceImpl implements AuxiliarBodegaService {
         Producto producto = productoService.obtenerProductoAutorizado(registrarProductoExistenteDto.codigoProducto());
 
         // 2. Obtenemos personal encargado
-        PersonalBodega personalBodega = personaUtilService.obtenerPersonalBodetaEmail(registrarProductoExistenteDto.emaiPersonalBodega());
+        PersonalBodega personalBodega = personaUtilService.obtenerPersonalBodetaEmail(registrarProductoExistenteDto.emailPersonalBodega());
 
 
         // 3. Registramos el movimiento

@@ -20,7 +20,7 @@ public record RegistrarProductoExistenteDto(
         TipoProducto tipoProducto,
 
         // Email del personal de bodega responsable del registro. No puede estar en blanco.
-        @NotBlank String emaiPersonalBodega,
+        @NotBlank String emailPersonalBodega,
         // Descripción opcional del movimiento de ingreso.
 
         String descripcion
