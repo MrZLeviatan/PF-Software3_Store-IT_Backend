@@ -20,13 +20,16 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/** Este es un controlador REST para la gestión de bodegas.
+  Proporciona endpoints para que los clientes interactúen con las funcionalidades
+  relacionadas con la administración de bodegas, como el registro y la búsqueda de productos.
+ */
 @RestController
 @RequestMapping("/api/gestor-bodega")
 @RequiredArgsConstructor
 public class GestorBodegaController {
 
     private final GestorBodegasService gestorBodegasService;
-
 
     //  ️Autorizar movimiento de producto
     @PostMapping("/movimientos/autorizar")
@@ -35,7 +38,6 @@ public class GestorBodegaController {
             gestorBodegasService.autorizarMovimiento(autorizacionProductoDto);
 
             return ResponseEntity.ok().body(new MensajeDto<>(false, "Movimiento verificado correctamente."));
-
     }
 
     // Ver detalle de un producto

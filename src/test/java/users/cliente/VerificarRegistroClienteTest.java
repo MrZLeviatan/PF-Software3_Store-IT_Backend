@@ -18,33 +18,43 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-
 import java.time.LocalDateTime;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Clase de pruebas para la verificación del registro de clientes en Store-IT.
+
+  Aquí se validan los distintos escenarios al momento de activar la cuenta de un cliente:
+  - Caso exitoso (cliente se activa correctamente).
+  - Email no registrado en el sistema.
+  - Código de verificación incorrecto.
+  - Código expirado.
+  - Cuenta ya se encuentra activa.
+  - Email con formato inválido.
+
+ * Se usan pruebas de integración con Spring Boot, MockMvc y una base de datos en memoria,
+ * permitiendo verificar el comportamiento del endpoint correspondiente.
+ */
 @SpringBootTest(classes = Main.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Transactional
 public class VerificarRegistroClienteTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc; // Simula las llamadas HTTP a los endpoints del backend
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper; // Convierte objetos Java a JSON y viceversa
 
     @Autowired
-    private ClienteRepo clienteRepo;
+    private ClienteRepo clienteRepo; // Repositorio de clientes para manipular datos de prueba
 
-    private Cliente clienteBase;
+    private Cliente clienteBase; // Cliente base reutilizado en cada prueba
 
     @BeforeEach
     void setUp() {
-
-        // Crear un cliente reutilizable para todos los tests
+        // Se prepara un cliente "inactivo" con un código válido antes de cada prueba
         clienteBase = new Cliente();
         clienteBase.setNombre("Juan");
         clienteBase.setTelefono("9999999999");
@@ -65,7 +75,7 @@ public class VerificarRegistroClienteTest {
         clienteRepo.save(clienteBase);
     }
 
-    // ✅ Caso exitoso
+    // Caso exitoso: cliente verifica su cuenta correctamente
     @Test
     void verificarCliente_DeberiaRetornar200YActivarCuenta() throws Exception {
         VerificacionCodigoDto dto = new VerificacionCodigoDto("cliente@test.com", "55B83C");
@@ -78,7 +88,7 @@ public class VerificarRegistroClienteTest {
                 .andExpect(jsonPath("$.error").value(false));
     }
 
-    // ❌ Email no encontrado
+    // Email no existe en el sistema
     @Test
     void verificarCliente_EmailNoExiste_DeberiaRetornar404() throws Exception {
         VerificacionCodigoDto dto = new VerificacionCodigoDto("no_existe@test.com", "XYZ789");
@@ -90,7 +100,7 @@ public class VerificarRegistroClienteTest {
                 .andExpect(jsonPath("$.error").value(true));
     }
 
-    // ❌ Código inválido
+    // Código incorrecto
     @Test
     void verificarCliente_CodigoInvalido_DeberiaRetornar401() throws Exception {
         VerificacionCodigoDto dto = new VerificacionCodigoDto("cliente@test.com", "CODIGO_ERRONEO");
@@ -102,11 +112,10 @@ public class VerificarRegistroClienteTest {
                 .andExpect(jsonPath("$.error").value(true));
     }
 
-    // ❌ Código expirado
+    // Código expirado
     @Test
     void verificarCliente_CodigoExpirado_DeberiaRetornar401() throws Exception {
-        // 🇺🇸 Expire the code
-        // 🇪🇸 Expirar el código
+        // Se fuerza la expiración del código antes de hacer la petición
         clienteBase.getUser().getCodigo().setFechaExpiracion(LocalDateTime.now().minusMinutes(20));
         clienteRepo.save(clienteBase);
 
@@ -119,7 +128,7 @@ public class VerificarRegistroClienteTest {
                 .andExpect(jsonPath("$.error").value(true));
     }
 
-    // ❌ Cuenta ya activada
+    // Cuenta ya estaba activa previamente
     @Test
     void verificarCliente_CuentaYaActiva_DeberiaRetornar422() throws Exception {
         clienteBase.getUser().setEstadoCuenta(EstadoCuenta.ACTIVO);
@@ -134,7 +143,7 @@ public class VerificarRegistroClienteTest {
                 .andExpect(jsonPath("$.error").value(true));
     }
 
-    // ❌ Email inválido
+    // Email con formato inválido
     @Test
     void verificarCliente_EmailInvalido_DeberiaRetornar400() throws Exception {
         VerificacionCodigoDto dto = new VerificacionCodigoDto("email_invalido", "ABC123");

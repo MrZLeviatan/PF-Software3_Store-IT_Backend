@@ -17,6 +17,13 @@ import java.io.IOException;
 import java.util.Map;
 
 
+/**
+  Implementación del servicio encargado de la gestión de imágenes en Cloudinary.
+
+  Funcionalidades principales:
+  - Subir imágenes a Cloudinary y obtener la URL pública resultante.
+  - Eliminar imágenes en base a su identificador (public_id).
+ */
 @Service
 public class CloudinaryServiceImpl implements CloudinaryService {
 

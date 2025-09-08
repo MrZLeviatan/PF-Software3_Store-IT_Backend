@@ -32,8 +32,6 @@ public class PersonaUtilServiceImpl implements PersonaUtilService {
     private final RecursosHumanosRepo recursosHumanosRepo;
     private final EmailService emailService;
 
-
-
     @Override
     public void validarEmailNoRepetido(String email)
             throws ElementoRepetidoException, ElementoEliminadoException {

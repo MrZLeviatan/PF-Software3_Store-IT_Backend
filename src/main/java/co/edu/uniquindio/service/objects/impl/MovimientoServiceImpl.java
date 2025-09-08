@@ -21,21 +21,29 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/** Implementación del servicio de movimientos en Store-IT.
+   Se encarga de registrar, consultar y listar los movimientos de productos
+   realizados en las bodegas (ingresos, retiros, autorizaciones, etc.).
+*/
 @Service
 @RequiredArgsConstructor
 public class MovimientoServiceImpl implements MovimientoService {
 
-
+    // Mapper para convertir entre entidades y DTOs de movimientos
     private final MovimientoMapper movimientoMapper;
+
+    // Repositorio para persistir y consultar movimientos de productos
     private final MovimientoProductoRepo movimientoProductoRepo;
 
-
-
+    // Registra un nuevo movimiento de producto en la base de datos. */
     @Override
     public MovimientosProducto registrarMovimientoProducto(String descripcion,
-                                                           PersonalBodega personalResponsable, TipoMovimiento tipoMovimiento,
-                                                           Producto producto, Integer cantidad) {
+                                                           PersonalBodega personalResponsable,
+                                                           TipoMovimiento tipoMovimiento,
+                                                           Producto producto,
+                                                           Integer cantidad) {
 
+        // Crear objeto de movimiento con la información proporcionada
         MovimientosProducto movimientosProducto = new MovimientosProducto();
         movimientosProducto.setDescripcion(descripcion);
         movimientosProducto.setTipoMovimiento(tipoMovimiento);
@@ -45,25 +53,30 @@ public class MovimientoServiceImpl implements MovimientoService {
         movimientosProducto.setVerificado(false);
         movimientosProducto.setPersonalResponsable(personalResponsable);
 
+        // Guardar movimiento en la base
         movimientoProductoRepo.save(movimientosProducto);
         return movimientosProducto;
     }
 
-
+    // Devuelve el detalle de un movimiento específico a partir de su ID.
     @Override
     public MovimientosProductoDto verDetalleMovimiento(Long idMovimiento)
             throws ElementoNoEncontradoException {
         return movimientoMapper.toDto(obtenerMovimiento(idMovimiento));
     }
 
-
+    // Obtiene un movimiento en formato entidad a partir de su ID.
     @Override
-    public MovimientosProducto obtenerMovimiento(Long idMovimiento) throws ElementoNoEncontradoException {
-        return   movimientoProductoRepo.findById(idMovimiento)
+    public MovimientosProducto obtenerMovimiento(Long idMovimiento)
+            throws ElementoNoEncontradoException {
+        return movimientoProductoRepo.findById(idMovimiento)
                 .orElseThrow(() ->
                         new ElementoNoEncontradoException(MensajeError.MOVIMIENTO_NO_EXISTE));
     }
 
+    /** Lista los movimientos registrados aplicando filtros opcionales como
+       producto, tipo de movimiento, fecha, responsables, autorizados y bodega.
+    */
     @Override
     public List<MovimientosProductoDto> listarMovimientos(
             String codigoProducto,
@@ -81,43 +94,43 @@ public class MovimientoServiceImpl implements MovimientoService {
         // 2. Crear predicado dinámico con filtros opcionales
         Specification<MovimientosProducto> spec = Specification.where(null);
 
-        // 3. Filtrar por código de producto si se proporciona
+        // 3. Filtrar por código de producto
         if (codigoProducto != null && !codigoProducto.isEmpty()) {
             spec = spec.and((root, query, builder) ->
                     builder.equal(root.get("producto").get("codigoProducto"), codigoProducto));
         }
 
-        // 4. Filtrar por tipo de movimiento si se proporciona
+        // 4. Filtrar por tipo de movimiento
         if (tipoMovimiento != null) {
             spec = spec.and((root, query, builder) ->
                     builder.equal(root.get("tipoMovimiento"), tipoMovimiento));
         }
 
-        // 5. Filtrar por fecha de movimiento si se proporciona
+        // 5. Filtrar por fecha de movimiento
         if (fechaMovimiento != null) {
             spec = spec.and((root, query, builder) ->
                     builder.equal(root.get("fechaMovimiento"), fechaMovimiento));
         }
 
-        // 6. Filtrar por email del personal responsable si se proporciona
+        // 6. Filtrar por email del personal responsable
         if (emailPersonalResponsable != null && !emailPersonalResponsable.isEmpty()) {
             spec = spec.and((root, query, builder) ->
                     builder.equal(root.get("personalResponsable").get("email"), emailPersonalResponsable));
         }
 
-        // 7. Filtrar por email del personal autorizado si se proporciona
+        // 7. Filtrar por email del personal autorizado
         if (emailPersonalAutorizado != null && !emailPersonalAutorizado.isEmpty()) {
             spec = spec.and((root, query, builder) ->
                     builder.equal(root.get("personalAutorizacion").get("email"), emailPersonalAutorizado));
         }
 
-        // 8. Filtrar por bodega si se proporciona
+        // 8. Filtrar por bodega
         if (idBodega != null && !idBodega.isEmpty()) {
             spec = spec.and((root, query, builder) ->
                     builder.equal(root.get("producto").get("bodega").get("id"), Long.parseLong(idBodega)));
         }
 
-        // 9. Obtener la lista paginada de movimientos filtrados
+        // 9. Obtener la lista paginada de movimientos
         Page<MovimientosProducto> movimientosPage = movimientoProductoRepo.findAll(spec, pageable);
 
         // 10. Convertir a DTOs y devolver
@@ -125,5 +138,4 @@ public class MovimientoServiceImpl implements MovimientoService {
                 .map(movimientoMapper::toDto)
                 .collect(Collectors.toList());
     }
-
 }

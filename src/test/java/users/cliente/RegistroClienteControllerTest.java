@@ -25,11 +25,25 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
+/**
+ * Test de integración para el controlador de registro de clientes en Store-IT.
+
+   Se usa SpringBootTest para levantar el contexto completo.
+   MockMvc para simular peticiones HTTP sin necesidad de desplegar el servidor.
+   ObjectMapper para transformar DTOs en JSON.
+   ClienteRepo para verificar persistencia y estados de clientes.
+
+  Cada prueba valida un escenario de negocio:
+  - Registro exitoso.
+  - Email duplicado (cuenta activa, inactiva o eliminada).
+  - Teléfono duplicado.
+  - Cliente jurídico sin NIT.
+  - Email inválido por @Valid.
+ */
 @SpringBootTest(classes = Main.class)       // Levantamos el test con todo y Spring
 @AutoConfigureMockMvc(addFilters = false)  // Ignora seguridad para pruebas
 @Transactional
 public class RegistroClienteControllerTest {
-
 
     @Autowired
     private MockMvc mockMvc;
@@ -41,6 +55,7 @@ public class RegistroClienteControllerTest {
     private ClienteRepo clienteRepo;
 
 
+    // Método auxiliar para crear un cliente válido base
     private CrearClienteDto crearClienteValido() {
         CrearUserDto userDto = new CrearUserDto("cliente@test.com", "Password123");
         UbicacionDto ubicacionDto = new UbicacionDto("Colombia", "Medellín", 6.25184, -75.56359);
@@ -58,7 +73,7 @@ public class RegistroClienteControllerTest {
         );
     }
 
-    // ✅ Caso exitoso
+    //  Caso exitoso
     @Test
     void registrarCliente_DeberiaRetornar200YMensajeExito() throws Exception {
         CrearClienteDto dto = crearClienteValido();
@@ -71,8 +86,7 @@ public class RegistroClienteControllerTest {
                 .andExpect(jsonPath("$.error").value(false));
     }
 
-
-    // ❌ Email duplicado -> cuenta activada
+    //  Email duplicado -> cuenta activada
     @Test
     void registrarCliente_EmailDuplicadoCuentaActiva_DeberiaRetornar400() throws Exception {
         // Creamos cliente con estado Activado manualmente en repo
@@ -98,8 +112,7 @@ public class RegistroClienteControllerTest {
                 .andExpect(jsonPath("$.error").value(true));
     }
 
-
-    // ❌ Email duplicado -> cuenta inactiva
+    //  Email duplicado -> cuenta inactiva
     @Test
     void registrarCliente_EmailDuplicado_DeberiaRetornar400() throws Exception {
         CrearClienteDto dto = crearClienteValido();
@@ -123,8 +136,7 @@ public class RegistroClienteControllerTest {
         assertEquals(TipoCodigo.VERIFICACION_2FA, actualizado.getUser().getCodigo().getTipoCodigo());
     }
 
-
-    // ❌ Email duplicado -> cuenta eliminada
+    //  Email duplicado -> cuenta eliminada
     @Test
     void registrarCliente_EmailDuplicadoCuentaEliminada_DeberiaRetornar400() throws Exception {
         // Creamos cliente con estado ELIMINADO manualmente en repo
@@ -150,16 +162,15 @@ public class RegistroClienteControllerTest {
                 .andExpect(jsonPath("$.error").value(true));
     }
 
-
-    // ❌ Teléfono duplicado
+    //  Teléfono duplicado
     @Test
     void registrarCliente_TelefonoDuplicado_DeberiaRetornar400() throws Exception {
         CrearClienteDto dto1 = crearClienteValido();
 
         // Guardamos el primero
         mockMvc.perform(post("/api/store-it/registro-clientes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto1)));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto1)));
 
         // Segundo cliente con mismo teléfono pero email distinto
         CrearUserDto otroUser = new CrearUserDto("otro@test.com", "Password123");
@@ -182,8 +193,7 @@ public class RegistroClienteControllerTest {
                 .andExpect(jsonPath("$.mensaje").value("El teléfono ya está registrado"));
     }
 
-
-    // ❌ Cliente jurídico sin NIT
+    //  Cliente jurídico sin NIT
     @Test
     void registrarCliente_JuridicoSinNit_DeberiaRetornar400() throws Exception {
         CrearUserDto userDto = new CrearUserDto("empresa@test.com", "Password123");
@@ -208,8 +218,7 @@ public class RegistroClienteControllerTest {
                 .andExpect(jsonPath("$.mensaje").value("Falta de datos para completar el registro"));
     }
 
-
-    // ❌ Validación de @Valid (email inválido)
+    //  Validación de @Valid (email inválido)
     @Test
     void registrarCliente_EmailInvalido_DeberiaRetornar400() throws Exception {
         CrearUserDto userDto = new CrearUserDto("correo_invalido", "Password123"); // email inválido
@@ -236,4 +245,3 @@ public class RegistroClienteControllerTest {
     }
 
 }
-

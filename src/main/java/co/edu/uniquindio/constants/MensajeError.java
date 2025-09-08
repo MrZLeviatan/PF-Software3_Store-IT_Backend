@@ -1,7 +1,9 @@
 package co.edu.uniquindio.constants;
 
+/**
+ * clase para mostrar emensajes de errores
+ */
 public class MensajeError {
-
 
     // -----------> EMAIL <----------------
     public static final String ERROR_ENVIO_CORREO = "Error al construir o enviar el correo electrónico al destinatario: ";
