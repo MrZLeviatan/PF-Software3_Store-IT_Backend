@@ -1,32 +1,14 @@
-# =======================
-# Build stage
-# =======================
-FROM openjdk:17-jdk-slim AS build
-
-WORKDIR /home/app
-
-# Copiar todo el proyecto
-COPY . .
-
-# Dar permisos al gradlew
-RUN chmod +x ./gradlew
-
-# Limpiar y compilar ignorando tests
+# Etapa de build
+FROM gradle:9.0-jdk22 AS build
+WORKDIR /home/gradle/src
+COPY --chown=gradle:gradle . .
+RUN chmod +x gradlew
 RUN ./gradlew clean bootJar -x test
 
-# =======================
-# Package stage
-# =======================
-FROM openjdk:17-jdk-slim
-
-WORKDIR /app
-
-# Copiar el JAR del stage anterior
-COPY --from=build /home/app/build/libs/*.jar app.jar
-
-# Exponer el puerto de Render
-ARG PORT=8080
-EXPOSE $PORT
-
-# Ejecutar la app
+# Etapa de ejecución
+FROM openjdk:22-jdk-slim
+ARG JAR_FILE=build/libs/*.jar
+COPY --from=build /home/gradle/src/build/libs/*.jar app.jar
+EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app.jar"]
+
