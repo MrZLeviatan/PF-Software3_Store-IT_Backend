@@ -1,13 +1,19 @@
 package co.edu.uniquindio.constants;
 
+import co.edu.uniquindio.model.embeddable.DatosLaborales;
 import co.edu.uniquindio.model.embeddable.User;
 import co.edu.uniquindio.model.entities.users.PersonalBodega;
+import co.edu.uniquindio.model.enums.EstadoContratoLaboral;
 import co.edu.uniquindio.model.enums.EstadoCuenta;
+import co.edu.uniquindio.model.enums.TipoContrato;
 import co.edu.uniquindio.model.enums.TipoPersonalBodega;
 import co.edu.uniquindio.repository.users.PersonalBodegaRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Component
 public class DatosInicialesRunner implements CommandLineRunner {
@@ -28,6 +34,13 @@ public class DatosInicialesRunner implements CommandLineRunner {
         user.setPassword("nicolas1234");
         user.setEstadoCuenta(EstadoCuenta.ACTIVO);
         personalBodegaGestor.setUser(user);
+
+        DatosLaborales datosLaboralesGestor = new DatosLaborales();
+        datosLaboralesGestor.setFechaInicioContrato(LocalDate.now());
+        datosLaboralesGestor.setSueldo(BigDecimal.valueOf(3000));
+        datosLaboralesGestor.setTipoContrato(TipoContrato.FIJO);
+        datosLaboralesGestor.setEstadoContratoLaboral(EstadoContratoLaboral.ACTIVO);
+        personalBodegaGestor.setDatosLaborales(datosLaboralesGestor);
         personalBodegaGestor.setTipoPersonalBodega(TipoPersonalBodega.GESTOR_BODEGA);
         personalBodegaRepo.save(personalBodegaGestor);
 
@@ -40,6 +53,14 @@ public class DatosInicialesRunner implements CommandLineRunner {
         user.setPassword("nicolas2810");
         user.setEstadoCuenta(EstadoCuenta.ACTIVO);
         personalBodegaAuxiliar.setUser(user);
+
+
+        DatosLaborales datosLaboralesAux = new DatosLaborales();
+        datosLaboralesAux.setFechaInicioContrato(LocalDate.now());
+        datosLaboralesAux.setSueldo(BigDecimal.valueOf(3000));
+        datosLaboralesAux.setTipoContrato(TipoContrato.FIJO);
+        datosLaboralesAux.setEstadoContratoLaboral(EstadoContratoLaboral.ACTIVO);
+        personalBodegaAuxiliar.setDatosLaborales(datosLaboralesAux);
         personalBodegaAuxiliar.setTipoPersonalBodega(TipoPersonalBodega.AUXILIAR_BODEGA);
         personalBodegaRepo.save(personalBodegaAuxiliar);
     }
